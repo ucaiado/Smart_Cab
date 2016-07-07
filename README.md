@@ -1,7 +1,7 @@
 Smart Cab
 ==================
 
-In this project, I will use reinforcement learning to train a smart cab how to drive. A smart cab is a self-driving car from the not-so-distant future that ferries people from one arbitrary location to another. It operates in an idealized grid-like city, where may be present other vehicles, but no pedestrians. Also, there is a traffic light at each intersection. This project is part of the [Machine Learning Engineer Nanodegree](https://www.udacity.com/course/machine-learning-engineer-nanodegree--nd009) program, from Udacity. You can check my report <a href="" target="_blank">here</a> and the notebook with the tests of the codes used in this project <a href="" target="_blank">here</a>. The TEX file was produced with help of [Overleaf]().
+In this project, I will use reinforcement learning to train a smart cab how to drive. A smart cab is a self-driving car from the not-so-distant future that ferries people from one arbitrary location to another. It operates in an idealized grid-like city, where may be present other vehicles, but no pedestrians. Also, there is a traffic light at each intersection. This project is part of the [Machine Learning Engineer Nanodegree](https://www.udacity.com/course/machine-learning-engineer-nanodegree--nd009) program, from Udacity. You can check my report <a href="https://www.dropbox.com/s/tbjmoay8470qfjc/train-smartcab-drive.pdf?dl=0" target="_blank">here</a> and the notebook with the tests of the codes used in this project <a href="https://nbviewer.jupyter.org/github/ucaiado/Smart_Cab/blob/master/smart_cab.ipynb" target="_blank">here</a>. The TEX file was produced with help of [Overleaf](https://www.overleaf.com/read/dvjzgxfzbmwj).
 
 
 ### Install
@@ -26,4 +26,4 @@ In a terminal or command window, navigate to the top-level project directory `sm
 
 
 ### License
-The contents of this repository are covered under the [MIT License](LICENSE).
+The contents of this repository are covered under the [MIT License](LICENSE.md).
