@@ -23,6 +23,9 @@ In a terminal or command window, navigate to the top-level project directory `sm
 ### Reference
 1. T.M. Mitchell.  *Machine  Learning*.   McGraw-Hill International Editions, 1997. [*link*](http://www.cs.cmu.edu/afs/cs.cmu.edu/user/mitchell/ftp/mlbook.html)
 2. Udacity. *Original Project Repository*. 2016. [*link*](https://github.com/udacity/machine-learning/tree/master/projects/smartcab)
+3. M. Mohri, A. Rostamizazadeh, A. Talwalkar. *Foundations of Machine Learning*. 2012. [*link*](https://mitpress.mit.edu/books/foundations-machine-learning)
+4. L.P. Kaelbling, M.L. Littman, A.W. Moore. *Reinforcement Learning: A Survey*. 1996. [*link*](https://www.jair.org/media/301/live-301-1562-jair.pdf)
+ 
 
 
 ### License
