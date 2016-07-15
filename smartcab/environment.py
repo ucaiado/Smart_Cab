@@ -3,6 +3,11 @@ import random
 from collections import OrderedDict
 
 from simulator import Simulator
+import logging
+
+# global variable
+DEBUG = True
+
 
 class TrafficLight(object):
     """A traffic light that switches periodically."""
@@ -91,7 +96,12 @@ class Environment(object):
 
         start_heading = random.choice(self.valid_headings)
         deadline = self.compute_dist(start, destination) * 5
-        print "Environment.reset(): Trial set up with start = {}, destination = {}, deadline = {}".format(start, destination, deadline)
+        s_msg = 'Environment.reset(): Trial set up with start = {}, '
+        s_msg += 'destination = {}, deadline = {}'
+        if DEBUG:
+            logging.info(s_msg.format(start, destination, deadline))
+        else:
+            print s_msg.format(start, destination, deadline)
 
         # Initialize agent(s)
         for agent in self.agent_states.iterkeys():
