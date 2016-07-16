@@ -1,4 +1,8 @@
 import random
+import logging
+
+# global variable
+DEBUG = True
 
 class RoutePlanner(object):
     """Silly route planner that is meant for a perpendicular grid network."""
@@ -10,7 +14,11 @@ class RoutePlanner(object):
 
     def route_to(self, destination=None):
         self.destination = destination if destination is not None else random.choice(self.env.intersections.keys())
-        print "RoutePlanner.route_to(): destination = {}".format(destination)  # [debug]
+        s_msg = "RoutePlanner.route_to(): destination = {}".format(destination)  # [debug]
+        if DEBUG:
+            logging.info(s_msg)
+        else:
+            print s_msg
 
     def next_waypoint(self):
         location = self.env.agent_states[self.agent]['location']

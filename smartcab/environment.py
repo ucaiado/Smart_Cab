@@ -126,12 +126,22 @@ class Environment(object):
         self.t += 1
         if self.primary_agent is not None:
             agent_deadline = self.agent_states[self.primary_agent]['deadline']
+
+
+            # change this part of the code to log the messages to a file
+            s_msg = None
             if agent_deadline <= self.hard_time_limit:
                 self.done = True
-                print "Environment.step(): Primary agent hit hard time limit ({})! Trial aborted.".format(self.hard_time_limit)
+                s_msg = "Environment.step(): Primary agent hit hard time limit ({})! Trial aborted.".format(self.hard_time_limit)
             elif self.enforce_deadline and agent_deadline <= 0:
                 self.done = True
-                print "Environment.step(): Primary agent ran out of time! Trial aborted."
+                s_msg = "Environment.step(): Primary agent ran out of time! Trial aborted."
+            if s_msg:
+                if DEBUG:
+                    logging.info(s_msg)
+                else:
+                    print s_msg
+
             self.agent_states[self.primary_agent]['deadline'] = agent_deadline - 1
 
     def sense(self, agent):
@@ -214,7 +224,13 @@ class Environment(object):
                 if state['deadline'] >= 0:
                     reward += 10  # bonus
                 self.done = True
-                print "Environment.act(): Primary agent has reached destination!"  # [debug]
+
+                # change this part of the code to log the messages to a file
+                s_msg = "Environment.act(): Primary agent has reached destination!"  # [debug]
+                if DEBUG:
+                    logging.info(s_msg)
+                else:
+                    print s_msg
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
             #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
 

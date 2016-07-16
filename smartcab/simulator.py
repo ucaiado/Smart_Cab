@@ -2,6 +2,11 @@ import os
 import time
 import random
 import importlib
+import logging
+
+# global variable
+DEBUG = True
+
 
 class Simulator(object):
     """Simulates agents in a dynamic smartcab environment.
@@ -25,7 +30,7 @@ class Simulator(object):
         self.env = env
         self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.block_size, (self.env.grid_size[1] + 1) * self.env.block_size)
         self.width, self.height = self.size
-        
+
         self.bg_color = self.colors['white']
         self.road_width = 5
         self.road_color = self.colors['black']
@@ -54,10 +59,18 @@ class Simulator(object):
                 self.paused = False
             except ImportError as e:
                 self.display = False
-                print "Simulator.__init__(): Unable to import pygame; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+                s_msg = "Simulator.__init__(): Unable to import pygame; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+                if DEBUG:
+                    logging.info(s_msg)
+                else:
+                    print s_msg
             except Exception as e:
                 self.display = False
-                print "Simulator.__init__(): Error initializing GUI objects; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+                s_msg = "Simulator.__init__(): Error initializing GUI objects; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+                if DEBUG:
+                    logging.info(s_msg)
+                else:
+                    print s_msg
 
     def run(self, n_trials=1):
         self.quit = False

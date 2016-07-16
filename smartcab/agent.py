@@ -14,9 +14,25 @@ from planner import RoutePlanner
 from simulator import Simulator
 import logging
 import sys
+import time
 
 # global variable
 DEBUG = True
+
+# setup logging messages
+s_format = '%(asctime)s;%(message)s'
+s_now = time.strftime("%c")
+s_now = s_now.replace("/", "").replace(" ", "_").replace(":", "")
+s_file = 'log/sim_{}.log'.format(s_now)
+logging.basicConfig(filename=s_file, format=s_format)
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(s_format)
+ch.setFormatter(formatter)
+root.addHandler(ch)
 
 
 class LearningAgent(Agent):
@@ -76,23 +92,11 @@ def run():
     sim = Simulator(e, update_delay=0.5, display=False)
     # NOTE: To speed up simulation,reduce update_delay and/or set display=False
 
-    sim.run(n_trials=1)  # run for a specified number of trials
+    sim.run(n_trials=2)  # run for a specified number of trials
     # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C
     # on the command-line
 
 
 if __name__ == '__main__':
-    # setup logging messages
-    s_format = '%(asctime)s;%(message)s'
-    logging.basicConfig(filename='agent.log', format=s_format)
-    root = logging.getLogger()
-    root.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(logging.DEBUG)
-
-    formatter = logging.Formatter(s_format)
-    ch.setFormatter(formatter)
-    root.addHandler(ch)
-    root.debug('AGENT;Started')
     # run the code
     run()
