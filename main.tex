@@ -87,16 +87,28 @@ We are told to assume that a higher-level planner assigns a route to the smartca
 
 % code snipet
 \begin{lstlisting}
-<Time>;Environment.reset(): Trial set up with start = (4, 3), destination = (8, 4), deadline = 25
-<Time>;RoutePlanner.route_to(): destination = (8, 4)
-<Time>;LearningAgent.update(): deadline = 25, inputs = {'light': 'green', 'oncoming': None, 'right': 'forward', 'left': None}, action = None, reward = 0.0
-<Time>;LearningAgent.update(): deadline = 24, inputs = {'light': 'green', 'oncoming': None, 'right': 'forward', 'left': None}, action = None, reward = 0.0
+<Time>;Environment.reset():
+    Trial set up with start = (4, 3),
+    destination = (8, 4),
+    deadline = 25
+<Time>;RoutePlanner.route_to():
+    destination = (8, 4)
+<Time>;LearningAgent.update():
+    deadline = 25,
+    inputs = {'light': 'green', 'oncoming': None,
+              'right': 'forward', 'left': None},
+    action = None,
+    reward = 0.0
 ...
-<Time>;LearningAgent.update(): deadline = 2, inputs = {'light': 'green', 'oncoming': None, 'right': None, 'left': None}, action = None, reward = 0.0
-<Time>;LearningAgent.update(): deadline = 1, inputs = {'light': 'green', 'oncoming': None, 'right': None, 'left': None}, action = None, reward = 0.0
-<Time>;LearningAgent.update(): deadline = 0, inputs = {'light': 'red', 'oncoming': None, 'right': None, 'left': None}, action = None, reward = 0.0
-<Time>;Environment.step(): Primary agent ran out of time! Trial aborted.
+<Time>;LearningAgent.update():
+    deadline = 0,
+...
+<Time>;Environment.step():
+    Primary agent ran out of time! Trial aborted.
 \end{lstlisting}
+
+\subsection{The Basic Agent}
+bla bla
 
 \subsection{The Angent's Behaviour}
 bla bla
