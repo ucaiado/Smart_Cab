@@ -21,8 +21,8 @@ DEBUG = True
 
 # setup logging messages
 s_format = '%(asctime)s;%(message)s'
-s_now = time.strftime("%c")
-s_now = s_now.replace("/", "").replace(" ", "_").replace(":", "")
+s_now = time.strftime('%c')
+s_now = s_now.replace('/', '').replace(' ', '_').replace(':', '')
 s_file = 'log/sim_{}.log'.format(s_now)
 logging.basicConfig(filename=s_file, format=s_format)
 root = logging.getLogger()
@@ -50,14 +50,11 @@ class BasicAgent(Agent):
         self.planner = RoutePlanner(self.env, self)
         # TODO: Initialize any additional variables here
 
-
-
     def reset(self, destination=None):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
         self.state = None
         self.next_waypoint = None
-        self.l_rewards = []
 
     def update(self, t):
         # Gather inputs
@@ -67,14 +64,10 @@ class BasicAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        self.state = {'next_waypoint': self.next_waypoint,
-                      'inputs': inputs,
-                      'deadline': deadline}
+        self.state = (inputs, self.next_waypoint, deadline)
 
         # TODO: Select action according to your policy
-        action = None
-        action = self.next_waypoint
-        self.next_waypoint = self._take_action()
+        action = self._take_action(self.state)
 
         # Execute action and get reward
         reward = self.env.act(self, action)
@@ -90,12 +83,12 @@ class BasicAgent(Agent):
         else:
             print s_rtn.format(deadline, inputs, action, reward)
 
-    def _take_action(self):
+    def _take_action(self, d_state):
         '''
         Return an action according to the agent policy
+        :param d_state: dictionary. The inputs to be considered by the agent
         '''
         return random.choice(Environment.valid_actions)
-
 
     def _apply_policy(self, state, action, reward):
         '''
@@ -157,7 +150,6 @@ class LearningAgent(BasicAgent):
         '''
         return random.choice(Environment.valid_actions)
 
-
     def _apply_policy(self, state, action, reward):
         '''
         Learn policy based on state, action, reward
@@ -174,16 +166,16 @@ def run():
     e = Environment()  # create environment (also adds some dummy traffic)
     a = e.create_agent(BasicAgent)  # create agent
     # a = e.create_agent(LearningAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
+    e.set_primary_agent(a, enforce_deadline=False)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
     # longer trials
 
     # Now simulate it
     # create simulator (uses pygame when display=True, if available)
-    sim = Simulator(e, update_delay=0.5, display=True)
+    sim = Simulator(e, update_delay=0.01, display=False)
     # NOTE: To speed up simulation,reduce update_delay and/or set display=False
 
-    sim.run(n_trials=2)  # run for a specified number of trials
+    sim.run(n_trials=100)  # run for a specified number of trials
     # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C
     # on the command-line
 
