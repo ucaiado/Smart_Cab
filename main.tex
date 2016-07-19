@@ -108,27 +108,44 @@ As mentioned before, I am going to implement a smartcab that processes the follo
 
 For the purposes of this project, the agent should produce just some random move, like \textit{'None'}, \textit{'forward'}, \textit{'left'} and \textit{'right'}. I will not implement the correct strategy because it is precisely what my agent is supposed to learn.
 
+For the purposes of this project, the first implementation of the agent should produce just some random move at each time $t$, such that $a_t \in (None,\, forward,\, left,\, right)$. I will not implement the correct strategy because it is precisely what my agent is supposed to learn. Below I am going to simulate $99$ different trials with the \textit{'enforce_deadline'} set to False and will save the logs produced by the agent to observe how it performs. In this mode, the agent is given unlimited time to reach the destination.
 
-...
+% code snipet
+\begin{lstlisting}
+Number of Trials: 99
+Times that the agent reached the target location: 68
+Times the agent reached the hard deadline: 31
+Times the agent SUCCESSFULLY reached the target location: 20
+Counting of moves made:
+{'forward': 2018, 'None': 2085, 'right': 2035, 'left': 2094}
+\end{lstlisting}
 
+As can be seen above, even using just random moves, the agent still was able to reach the target destination roughly $20\%$ of the trials at the deadline stipulated by the Planner. If we considering all the times it reached the location, it was able to complete the route almost $70\%$ of the trials. Now, I am going to produce same basic statistics about the times that it reached the target location.
 
-\subsection{The Angent's Behaviour}
-
-bla bla bla
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.85\textwidth]{images/steps_takes.png}
+\caption{\label{fig:boxplot}Number of Seteps Used to Reached The Destination}
+\end{figure}
 
 \begin{table}[ht!]
 \centering
 \begin{tabular}{l|rrrrrr}
-{ID} &    Fresh &     Milk &  Grocery &    Frozen & Detergents & Delicatessen \\\hline
-1   &  7057.00 &  9810.00 &  9568.00 &   1762.00 &          3293.00 &      1776.00 \\
-271 &  2083.00 &  5007.00 &  1563.00 &   1120.00 &           147.00 &      1550.00 \\
-413 &  4983.00 &  4859.00 &  6633.00 &  17866.00 &           912.00 &      2435.00 \\
-
+{} &  Number Of Steps \\
+\midrule
+count &         68.00000 \\
+mean  &         59.00000 \\
+std   &         36.06048 \\
+min   &          2.00000 \\
+25\%   &         23.75000 \\
+50\%   &         60.00000 \\
+75\%   &         91.00000 \\
+max   &        130.00000 \\
 \end{tabular}
-\caption{\label{tab:sample}A Sample Of The Original Dataset}
+\caption{\label{tab:sample}Basic Agent Simulation Statistics}
 \end{table}
 
-...
+It took 59 steps on average, and the variation was huge. The agent has taken from 2 steps to 130 to finish the route. In the next sections, I will try to improve that.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% IDENTIFY AND UPDATE STATE
