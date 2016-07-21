@@ -140,16 +140,28 @@ max   &        130.00 \\
 \caption{\label{tab:basic_stats}Basic Agent Simulation Statistics}
 \end{table}
 
-According to the table \ref{tab:basic_stats}, It took 59 steps on average, and the variation was huge. The agent has taken from 2 steps to 130 to finish the route. In the next sections, I will try to improve that.
+According to the table \ref{tab:basic_stats}, It took 59 steps on average, and the variation was huge. The agent has taken from 2 steps to 130 to finish the route. In the section \ref{sec:enhance_driving_agent}, I will try to improve that.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% IDENTIFY AND UPDATE STATE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Identify and Update State}
-\label{sec:identify_update_state}
-In this section, ...
+\subsection{Identify and Update State}
+To complete the implementation of my Basic Agent, I still need to decide how it will represent its state internally. Considering the inputs that it receives before performs any action and, consequently, receives a reward, I will use a tuple using all of them to represent the current state of my agent, in the form $(inputs,\, next\_waypoint,\, deadline)$. I believe that it will represent a reasonable set of states that my agent could use to gather more information from the environment.
 
+$Inputs$ is a dictionary with the state of the traffic light for the agents' direction of movement and the direction of the random agents on each of the incoming roadways (if any). $next_waypoint$ is the direction of the target location and $deadline$, a timer. So, let's count the number of stated that I get when I enforce deadline in my simulation on $100$ trials.
+
+\begin{lstlisting}
+number of states in the state space: 891
+\end{lstlisting}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.75\textwidth]{images/basic_agent_behaviour.png}
+\caption{\label{fig:hist_basic_agent}Count Of Times That Each State Appeared}
+\end{figure}
+
+The figure \ref{fig:hist_basic_agent} presents the frequency of the counting of each state. For instance, around $600$ states appeared just two times, more than $100$ appeared four times and so on. Curiously the agent's behavior distribution looks like a log-normal distribution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% IMPLEMENT Q-LEARNING

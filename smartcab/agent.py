@@ -79,7 +79,9 @@ class BasicAgent(Agent):
         s_rtn = 'LearningAgent.update(): deadline = {}, inputs = {}, action'
         s_rtn += ' = {}, reward = {}'
         if DEBUG:
-            root.debug(s_rtn.format(deadline, inputs, action, reward))
+            s_rtn += ', next_waypoint = {}'
+            root.debug(s_rtn.format(deadline, inputs, action, reward,
+                       self.next_waypoint))
         else:
             print s_rtn.format(deadline, inputs, action, reward)
 
@@ -166,7 +168,7 @@ def run():
     e = Environment()  # create environment (also adds some dummy traffic)
     a = e.create_agent(BasicAgent)  # create agent
     # a = e.create_agent(LearningAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=False)  # specify agent to track
+    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
     # longer trials
 
