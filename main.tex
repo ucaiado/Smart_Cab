@@ -169,8 +169,25 @@ The figure \ref{fig:hist_basic_agent} presents the frequency of the counting of 
 
 \section{Implement Q-Learning}
 \label{sec:implement_q_learning}
-In this section, ...
+In this section, I will briefelly explained the concept of Q-learning and implement an algorithm to learn the Q function.
 
+\subsection{The Q-Function}
+As mention before, to learn an optimal policy $\pi^{*}$, I can't learn a function $\pi^{*}: S \rightarrow A$ that maps a state to the optimal action directly. There is no such information upfront to be used as training data. Instead, as \cite{Mitchell} explained, the only available information is the sequence of immediate rewards $r(s_i, a_i)$ for $i=1,\, 2,\, 3,\,...$
+
+So, as we are trying to maximize the cumulative rewards $V^{*}(s_t)$ for all states $s$, the agent should prefer $s_1$ over $s_2$ wherever $V^{*}(s_1) > V^{*}(s_2)$. Given that the agent must choose among actions and not states, and it isn't able to perfectly predict the immediate reward and immediate successor for every possible state-action transition, we also must learn $V^{*}$ indirectly.
+
+To solve that, we define a function $Q(s, \, a)$ such that its value is the maximum discounted cumulative reward that can be achieved starting from state $s$ and applying action $a$ as the first action. So, we can write:
+
+$$Q(s, \, a) = r(s, a) + \gamma V^{*}(\delta(s, a))$$
+
+As $\delta(s, a)$ is the state resulting from applying action $a$ to state $s$ (the successor) chosen by following the optimal policy, $V^{*}$ is the cumulative value of the immediate successor state discounted by a factor $\gamma$. Thus,  what we are trying to achieve is
+
+$$\pi^{*}(s) = \underset{a}{\arg \max} Q(s, \, a)$$
+
+Thus, the optimal policy can be obtained even if the agent just uses the current action $a$ and state $s$ and chooses the action that maximizes $Q(s,\, a)$. Also, it is important to notice that the function above implies that the agent can select optimal actions even when it has no knowledge of the functions $r$ and $\delta$. In the next subsection, we will see how \cite{Mitchell} defined a reliable way to estimate training values for $Q$, given only a sequence of immediate rewards $r$.
+
+
+\subsection{Learning $Q$}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ENHANCE DRIVING AGENT

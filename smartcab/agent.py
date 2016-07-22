@@ -15,6 +15,7 @@ from simulator import Simulator
 import logging
 import sys
 import time
+import defaultdict
 
 # Log finle enabled. global variable
 DEBUG = True
@@ -113,38 +114,8 @@ class LearningAgent(BasicAgent):
         super(LearningAgent, self).__init__(env)
         # override color
         self.color = 'red'
-        # simple route planner to get next_waypoint
-        self.planner = RoutePlanner(self.env, self)
         # TODO: Initialize any additional variables here
-
-    def reset(self, destination=None):
-        self.planner.route_to(destination)
-        # TODO: Prepare for a new trip; reset any variables here, if required
-
-    def update(self, t):
-        # Gather inputs
-        # from route planner, also displayed by simulator
-        self.next_waypoint = self.planner.next_waypoint()
-        inputs = self.env.sense(self)
-        deadline = self.env.get_deadline(self)
-
-        # TODO: Update state
-
-        # TODO: Select action according to your policy
-        action = None
-
-        # Execute action and get reward
-        reward = self.env.act(self, action)
-
-        # TODO: Learn policy based on state, action, reward
-
-        # [debug]
-        s_rtn = 'LearningAgent.update(): deadline = {}, inputs = {}, action'
-        s_rtn += ' = {}, reward = {}'
-        if DEBUG:
-            root.debug(s_rtn.format(deadline, inputs, action, reward))
-        else:
-            print s_rtn.format(deadline, inputs, action, reward)
+        self.
 
     def _take_action(self):
         '''
@@ -166,8 +137,8 @@ def run():
     """Run the agent for a finite number of trials."""
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
-    a = e.create_agent(BasicAgent)  # create agent
-    # a = e.create_agent(LearningAgent)  # create agent
+    # a = e.create_agent(BasicAgent)  # create agent
+    a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
     # longer trials
