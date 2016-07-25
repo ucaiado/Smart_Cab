@@ -16,6 +16,7 @@ import logging
 import sys
 import time
 from collections import defaultdict
+import pandas as pd
 
 # Log finle enabled. global variable
 DEBUG = True
@@ -42,13 +43,13 @@ Begin help functions
 
 def save_q_table(e):
     '''
-    ...
+    Log the final Q-table of the algorithm
     :param e: Environment object. The grid-like world
     '''
-    agent = self.primary_agent
+    agent = e.primary_agent
     try:
         q_table = agent.q_table
-        raise NotImplementedError
+        pd.DataFrame(q_table).T.to_csv('log/qtable.log', sep='\t')
     except:
         print 'No Q-table to be printed'
 
@@ -141,7 +142,7 @@ class BasicAgent(Agent):
 class BasicLearningAgent(BasicAgent):
     '''
     A representation of an agent that learns using a basic implementation of
-    Q-learning
+    Q-learning that is suited for deterministic Markov decision processes
     '''
     def __init__(self, env, f_gamma=0.9):
         '''
@@ -161,20 +162,18 @@ class BasicLearningAgent(BasicAgent):
         self.last_action = None
         self.last_reward = None
 
-    def _take_action(self, t_state, b_explore=False):
+    def _take_action(self, t_state):
         '''
         Return an action according to the agent policy
         :param t_state: tuple. The inputs to be considered by the agent
-        :param b_explore: boolean. If should explore the world
         '''
         # set a random action in case of exploring world
         max_val = 0
         best_Action = random.choice(Environment.valid_actions)
-        if not b_explore:
-            # arg max Q-value choosing a action
-            for action, val in self.q_table[str(t_state)].iteritems():
-                if val > max_val:
-                    best_Action = action
+        # arg max Q-value choosing a action better than zero
+        for action, val in self.q_table[str(t_state)].iteritems():
+            if val > max_val:
+                best_Action = action
         return best_Action
 
     def _apply_policy(self, state, action, reward):
@@ -247,7 +246,7 @@ def run():
 
     # Now simulate it
     # create simulator (uses pygame when display=True, if available)
-    sim = Simulator(e, update_delay=0.5, display=True)
+    sim = Simulator(e, update_delay=0.01, display=False)
     # NOTE: To speed up simulation,reduce update_delay and/or set display=False
 
     sim.run(n_trials=100)  # run for a specified number of trials
