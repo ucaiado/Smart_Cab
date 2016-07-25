@@ -188,7 +188,49 @@ Thus, the optimal policy can be obtained even if the agent just uses the current
 
 
 \subsection{Learning Q}
-...
+As we have seen, learning the Q function corresponds to learning the optimal policy. According to \cite{Mohri_2012}, the optimal state-action value function $Q^{*}$ is defined for all $(s, \, a) \in S \times A$ as the expected return for taking the action $a \in A$ at the state $s \in S$, following the optimal policy. So, it can be written as \cite{Mitchell} suggested:
+
+$$V^{*}(s) = \underset{a'}{\arg \max} Q(s, \, a')$$
+
+Using this relationship, we can write a recursive definition of Q function, such that:
+
+$$Q(s, \, a) = r(s, a) + \gamma \, \underset{a'}{\max} \, Q(\delta(s,\, a), \, a')$$
+
+The recursive nature of the function above implies that our agent doesn't know the actual $Q$ function. It just can estimate $Q$, that we will refer as $\hat{Q}$. It will represents is hypothesis $\hat{Q}$ as a large table that attributes each pair $(s\, , \, a)$ to a value for $\hat{Q}(s,\, a)$ - the current hypothesis about the actual but unknown value $Q(s, \, a)$. I will initialize this table with zeros, but it could be filled with random numbers, according to \cite{Mitchell}. Still according to him, the agent repeatedly should observe its current state $s$ and do the following:
+- Observe the current state $s$ and:
+    - Choose some action $a$ and execute it
+    - Receive the immediate reward $r = r(s, a)$
+    - initialize the table entry $\hat{Q}(s, \, a)$ to zero if there is no entry $(s, \, a)$
+    - Observe the new state $s' = \delta(s, \,a)$.
+    - Updates the table entry for $\hat{Q}(s, \, a)$ following:
+        - $\hat{Q}(s, \, a) \leftarrow r + \gamma \underset{a'}{\max} \hat{Q}(s', \, a')$
+- $s \leftarrow s'$
+
+Note this training rule is suited to a deterministic Markov decision process (where $r(s,\, a)$ and $\delta(s,\, a)$ are deterministic) and uses the agent's current $\hat{Q}$ values for the new state $s'$ to refine its estimate of $\hat{Q}(s, \,a)$ for the previous state $s$. It is tricky. So, let's take a look at its performance.
+
+\begin{lstlisting}
+Number of Trials: 100
+Times that the agent reached the target location: 55
+Times the agent reached the hard deadline: 45
+Times the agent SUCCESSFULLY reached the target location: 55
+\end{lstlisting}
+
+The agent is reaching its destination much more frequently than before. When the agent selected its action randomly, it reached its destination just 21\% of the times. Now, it is reaching 55\%. Now the agent is always taking the "safest action":  takes the action with the biggest reward. It is not bad, but looking at the number of explored actions by state in the Q-table produced by this simulation, we can notice something curious
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{l|r}
+\multicolumn{2}{ c }{Number of Explored Actions} \\
+\midrule
+1                          &  56.28\% \\
+2                          &  21.10\% \\
+3                          &  15.83\% \\
+4                          &  6.78\% \\
+\end{tabular}
+\caption{\label{tab:basic_stats}Explored Actions in The Q-Table}
+\end{table}
+
+The agent explored just one possible action in $56\%$ of the states in the Q-Table. According to \cite{Mitchell}, there are some conditions to ensure that the algorithm converges toward a $\hat{Q}$ equal to the true $Q$ function. One of them is that the system should be a deterministic MDP. Another is that the agent must select actions in a way that it visits every possible state-action pair infinitely often. Looking at the number of times this implementation of the agent explored all $4$ possibles actions, I would say that it isn't true. In the next section, I will try to improve te agent's performance.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ENHANCE DRIVING AGENT
@@ -198,6 +240,11 @@ Thus, the optimal policy can be obtained even if the agent just uses the current
 \label{sec:enhance_driving_agent}
 In this section, ...
 
+\subsection{Experimentation Strategies}
+bla bla bla
+
+\subsection{Nondeterministic Rewards and Actions}
+bla bla bla
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CONCLUSION

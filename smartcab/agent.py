@@ -41,6 +41,7 @@ root.addHandler(ch)
 Begin help functions
 '''
 
+
 def save_q_table(e):
     '''
     Log the final Q-table of the algorithm
@@ -156,7 +157,7 @@ class BasicLearningAgent(BasicAgent):
         # override color
         self.color = 'white'
         # TODO: Initialize any additional variables here
-        self.q_table = defaultdict(lambda : defaultdict(float))
+        self.q_table = defaultdict(lambda: defaultdict(float))
         self.f_gamma = f_gamma
         self.old_state = None
         self.last_action = None
@@ -201,7 +202,8 @@ class BasicLearningAgent(BasicAgent):
         self.old_state = state
         self.last_action = action
         self.last_reward = reward
-
+        # make sure that the current state has at the current reward
+        self.q_table[str(self.old_state)][self.last_action] = self.last_reward
 
 
 class LearningAgent(BasicLearningAgent):
@@ -215,7 +217,6 @@ class LearningAgent(BasicLearningAgent):
         # override color
         self.color = 'red'
         # TODO: Initialize any additional variables here
-
 
     def _take_action(self):
         '''
