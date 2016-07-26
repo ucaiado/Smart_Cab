@@ -149,7 +149,7 @@ class BasicLearningAgent(BasicAgent):
         '''
         Initialize a BasicLearningAgent. Save all parameters as attributes
         :param env: Environment object. The grid-like world
-        :param f_gamma: float. weight of delayed versus immediate rewards
+        :*param f_gamma: float. weight of delayed versus immediate rewards
         '''
         # sets self.env = env, state = None, next_waypoint = None, and a
         # default color
@@ -174,6 +174,7 @@ class BasicLearningAgent(BasicAgent):
         # arg max Q-value choosing a action better than zero
         for action, val in self.q_table[str(t_state)].iteritems():
             if val > max_val:
+                max_val = val
                 best_Action = action
         return best_Action
 
@@ -206,23 +207,80 @@ class BasicLearningAgent(BasicAgent):
         self.q_table[str(self.old_state)][self.last_action] = self.last_reward
 
 
-class LearningAgent(BasicLearningAgent):
+class LearningAgent_k(BasicLearningAgent):
     '''
-    An agent that learns to drive in the smartcab world.
+    A representation of an agent that learns to drive adopts a probabilistic
+    approach to select actions
     '''
-    def __init__(self, env):
+    def __init__(self, env, f_gamma=0.9, f_k=0.3):
+        '''
+        Initialize a LearningAgent2. Save all parameters as attributes
+        :param env: Environment object. The grid-like world
+        :*param f_gamma: float. weight of delayed versus immediate rewards
+        :*param f_k: float. How strongly should favor high Q-hat values
+        '''
+        # sets self.env = env, state = None, next_waypoint = None, and a
+        # default color
+        super(LearningAgent_k, self).__init__(env)
+        # override color
+        self.color = 'yellow'
+        # TODO: Initialize any additional variables here
+        self.f_k = f_k
+
+    def _take_action(self, t_state):
+        '''
+        Return an action according to the agent policy
+        :param t_state: tuple. The inputs to be considered by the agent
+        '''
+        # set a random action in case of exploring world
+        max_val = 0
+        cum_prob = 0.
+        f_count = 0.
+        best_Action = random.choice(Environment.valid_actions)
+        # arg max Q-value choosing a action better than zero
+        for action, val in self.q_table[str(t_state)].iteritems():
+            f_count += 1
+            cum_prob += self.f_k ** val
+            if val > max_val:
+                max_val = val
+                best_Action = action
+        # choose the best_action just if: eps <= k**thisQhat / sum(k**Qhat)
+        # if the agent still did not test all actions: (4. - f_count) * k**0.25
+        f_prob = ((self.f_k ** max_val) /
+                  ((4. - f_count) * self.f_k ** 0.25 + cum_prob))
+        if (random.random() <= f_prob):
+            root.debug('action: explotation, k = {}'.format(self.f_k))
+            return best_Action
+        else:
+            root.debug('action: exploration, k = {}'.format(self.f_k))
+            return random.choice(Environment.valid_actions)
+
+
+class LearningAgent(LearningAgent_k):
+    '''
+    A representation of an agent that learns to drive assuming that the world
+    is a non-deterministic MDP using Q-learning and adopts a probabilistic
+    approach to select actions
+    '''
+    def __init__(self, env, f_gamma=0.9, f_k=0.3):
+        '''
+        Initialize a LearningAgent. Save all parameters as attributes
+        :param env: Environment object. The grid-like world
+        :*param f_gamma: float. weight of delayed versus immediate rewards
+        :*param f_k: float. How strongly should favor high Q-hat values
+        '''
         # sets self.env = env, state = None, next_waypoint = None, and a
         # default color
         super(LearningAgent, self).__init__(env)
         # override color
         self.color = 'red'
         # TODO: Initialize any additional variables here
-
-    def _take_action(self):
-        '''
-        Return an action according to the agent policy
-        '''
-        return random.choice(Environment.valid_actions)
+        self.q_table = defaultdict(lambda: defaultdict(float))
+        self.f_gamma = f_gamma
+        self.f_k = f_k
+        self.old_state = None
+        self.last_action = None
+        self.last_reward = None
 
     def _apply_policy(self, state, action, reward):
         '''
@@ -231,7 +289,26 @@ class LearningAgent(BasicLearningAgent):
         :param action: string. the action selected at this time
         :param reward: integer. the rewards received due to the action
         '''
-        pass
+        # check if there is some state in cache
+        if self.old_state:
+            # apply: Q <- r + y max_a' Q(s', a')
+            # note that s' is the result of apply a in s. a' is the action that
+            # would maximize the Q-value for the state s'
+            s_state = str(state)
+            max_Q = 0.
+            l_aux = self.q_table[s_state].values()
+            if len(l_aux) > 0:
+                max_Q = max(l_aux)
+            gamma_f_max_Q_a_prime = self.f_gamma * max_Q
+            f_new = self.last_reward + gamma_f_max_Q_a_prime
+            self.q_table[str(self.old_state)][self.last_action] = f_new
+        # save current state, action and reward to use in the next run
+        # apply s <- s'
+        self.old_state = state
+        self.last_action = action
+        self.last_reward = reward
+        # make sure that the current state has at the current reward
+        self.q_table[str(self.old_state)][self.last_action] = self.last_reward
 
 
 def run():
@@ -239,7 +316,8 @@ def run():
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
     # a = e.create_agent(BasicAgent)  # create agent
-    a = e.create_agent(BasicLearningAgent)  # create agent
+    # a = e.create_agent(BasicLearningAgent)  # create agent
+    a = e.create_agent(LearningAgent_k, f_k=1.)  # create agent
     # a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
@@ -255,6 +333,14 @@ def run():
     # on the command-line
     # save the Q table of the primary agent
     save_q_table(e)
+
+    # for f_k in [0.05, 0.1, 0.3, 0.5, 1., 1.5, 2., 3., 5., 7., 10.]:
+    #     root.debug('NEW SIMULATION')
+    #     e = Environment()
+    #     a = e.create_agent(LearningAgent_k, f_k=f_k)
+    #     e.set_primary_agent(a, enforce_deadline=True)
+    #     sim = Simulator(e, update_delay=0.01, display=False)
+    #     sim.run(n_trials=100)
 
 
 if __name__ == '__main__':
