@@ -239,15 +239,17 @@ class LearningAgent_k(BasicLearningAgent):
         best_Action = random.choice(Environment.valid_actions)
         # arg max Q-value choosing a action better than zero
         for action, val in self.q_table[str(t_state)].iteritems():
-            f_count += 1
-            cum_prob += self.f_k ** val
+            # just consider action with positive rewards
+            if val > 0:
+                f_count += 1
+                cum_prob += self.f_k ** val
             if val > max_val:
                 max_val = val
                 best_Action = action
         # choose the best_action just if: eps <= k**thisQhat / sum(k**Qhat)
         # if the agent still did not test all actions: (4. - f_count) * k**0.25
         f_prob = ((self.f_k ** max_val) /
-                  ((4. - f_count) * self.f_k ** 0.25 + cum_prob))
+                  ((4. - f_count) * 0.2 + cum_prob))
         if (random.random() <= f_prob):
             root.debug('action: explotation, k = {}'.format(self.f_k))
             return best_Action
@@ -316,8 +318,7 @@ def run():
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
     # a = e.create_agent(BasicAgent)  # create agent
-    # a = e.create_agent(BasicLearningAgent)  # create agent
-    a = e.create_agent(LearningAgent_k, f_k=1.)  # create agent
+    a = e.create_agent(BasicLearningAgent)  # create agent
     # a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
@@ -334,8 +335,8 @@ def run():
     # save the Q table of the primary agent
     save_q_table(e)
 
-    # for f_k in [0.05, 0.1, 0.3, 0.5, 1., 1.5, 2., 3., 5., 7., 10.]:
-    #     root.debug('NEW SIMULATION')
+    # k tests
+    # for f_k in [0.05, 0.1, 0.3, 0.5, 1., 1.5, 2., 3., 5.]:
     #     e = Environment()
     #     a = e.create_agent(LearningAgent_k, f_k=f_k)
     #     e.set_primary_agent(a, enforce_deadline=True)

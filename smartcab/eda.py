@@ -71,3 +71,76 @@ def simple_counts(s_fname):
     print s_aux.format(i_success)
     print 'Counting of moves made:\n{}'.format(d_count)
     return l_last, (i_trial, i_reached, i_fail, i_success, d_count)
+
+
+def performance_measures(s_fname, i_trials=100):
+    '''
+    Return dictionaries counting the number of times the agent eplore and
+    exploit, the cumulated average rewards and the number of times that
+    compleated the route successfuly
+    :param s_fname: string. path to a log file
+    :*param i_trials: integer. number of trials at each simulation
+    '''
+    with open(s_fname) as fr:
+        i_trial = 0
+        s_k = None
+        d_kact = defaultdict(lambda: defaultdict(int))
+        d_krew = defaultdict(lambda: defaultdict(int))
+        d_ksuccess = defaultdict(int)
+        f_reward = 0.
+        f_count_step = 0
+        k = None
+        last_k = None
+        last_reward = 0.
+        i_fail = 0
+        i_success = 0
+        i_reached = 0
+        l_last = []
+        i_last_step = 0
+        i_that_time = 0
+
+        for idx, row in enumerate(fr):
+            s_aux = row.strip().split(';')[1]
+            if 'LearningAgent.update' in s_aux:
+                i_last_step = int(s_aux.split(',')[0].split('=')[1].strip())
+                s_action = s_aux.split('action = ')[1].split(',')[0]
+                last_reward = float(s_aux.split('reward = ')[1].split(',')[0])
+                f_reward += last_reward
+                f_count_step += 1
+
+            elif 'Environment.reset' in s_aux:
+                if k:
+                    d_krew[float(k)][i_trial] = f_reward/f_count_step
+
+                if i_trial == i_trials:
+                    d_ksuccess[float(k)] = i_success * 1. / i_trial
+                    i_success = 0.
+                i_trial += 1
+                b_already_finish = False
+
+            elif 'Environment.step' in s_aux:
+                if not b_already_finish:
+                    i_fail += 1
+                    i_that_time = 0
+                    b_already_finish = True
+
+            elif 'Environment.act' in s_aux:
+                if not b_already_finish:
+                    if i_last_step > 0:
+                        i_success += 1
+                    i_reached += 1
+                    i_that_time = 1
+                    b_already_finish = True
+
+            elif 'action:' in s_aux:
+                s_type, s_k = s_aux[8:].split(',')
+                _, k = s_k.split('k = ')
+                d_kact[float(k)][s_type] += 1
+                if k != last_k:
+                    i_trial = 1
+                    f_reward = last_reward
+                    f_count_step = 1.
+                last_k = k
+        d_ksuccess[float(k)] = i_success * 1. / i_trial
+
+    return d_kact, d_krew, d_ksuccess
