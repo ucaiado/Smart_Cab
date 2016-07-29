@@ -203,25 +203,29 @@ class BasicLearningAgent(BasicAgent):
         self.old_state = state
         self.last_action = action
         self.last_reward = reward
-        # make sure that the current state has at the current reward
-        self.q_table[str(self.old_state)][self.last_action] = self.last_reward
+        # make sure that the current state has at least the current reward
+        # notice that old_state and last_action is related to the current (s,a)
+        # at this point, and not to (s', a'), as previously used
+        if not self.q_table[str(self.old_state)][self.last_action]:
+            s_aux = str(self.old_state)
+            self.q_table[s_aux][self.last_action] = self.last_reward
 
 
 class LearningAgent_k(BasicLearningAgent):
     '''
-    A representation of an agent that learns to drive adopts a probabilistic
+    A representation of an agent that learns to drive adopting a probabilistic
     approach to select actions
     '''
     def __init__(self, env, f_gamma=0.9, f_k=0.3):
         '''
-        Initialize a LearningAgent2. Save all parameters as attributes
+        Initialize a LearningAgent_k. Save all parameters as attributes
         :param env: Environment object. The grid-like world
         :*param f_gamma: float. weight of delayed versus immediate rewards
         :*param f_k: float. How strongly should favor high Q-hat values
         '''
         # sets self.env = env, state = None, next_waypoint = None, and a
         # default color
-        super(LearningAgent_k, self).__init__(env)
+        super(LearningAgent_k, self).__init__(env, f_gamma)
         # override color
         self.color = 'yellow'
         # TODO: Initialize any additional variables here
@@ -273,16 +277,16 @@ class LearningAgent(LearningAgent_k):
         '''
         # sets self.env = env, state = None, next_waypoint = None, and a
         # default color
-        super(LearningAgent, self).__init__(env)
+        super(LearningAgent, self).__init__(env, f_gamma, f_k)
         # override color
         self.color = 'red'
         # TODO: Initialize any additional variables here
-        self.q_table = defaultdict(lambda: defaultdict(float))
-        self.f_gamma = f_gamma
-        self.f_k = f_k
-        self.old_state = None
-        self.last_action = None
-        self.last_reward = None
+        self.nvisits_table = defaultdict(lambda: defaultdict(float))
+        # prnt the parameter of the agent
+        # [debug]
+        if DEBUG:
+            s_rtn = 'LearningAgent.__init__(): gamme = {}, k = {}'
+            root.debug(s_rtn.format(self.f_gamma, self.f_k))
 
     def _apply_policy(self, state, action, reward):
         '''
@@ -291,6 +295,11 @@ class LearningAgent(LearningAgent_k):
         :param action: string. the action selected at this time
         :param reward: integer. the rewards received due to the action
         '''
+        # count the number of times this (s,a) was reached and the decay factor
+        self.nvisits_table[str(self.old_state)][self.last_action] += 1
+        f_alpha = self.nvisits_table[str(self.old_state)][self.last_action]
+        f_alpha = 1./(1.+f_alpha)
+        # f_alpha = 1.
         # check if there is some state in cache
         if self.old_state:
             # apply: Q <- r + y max_a' Q(s', a')
@@ -302,38 +311,45 @@ class LearningAgent(LearningAgent_k):
             if len(l_aux) > 0:
                 max_Q = max(l_aux)
             gamma_f_max_Q_a_prime = self.f_gamma * max_Q
-            f_new = self.last_reward + gamma_f_max_Q_a_prime
+            f_Qhat_prime = self.last_reward + gamma_f_max_Q_a_prime
+            f_Qhat = self.q_table[str(self.old_state)][self.last_action]
+            f_new = (1.-f_alpha) * f_Qhat + f_alpha * f_Qhat_prime
+            # apply: Q <- (1-a_n) Q(s,a) + a_n [r + y max_a' Q(s', a')]
             self.q_table[str(self.old_state)][self.last_action] = f_new
         # save current state, action and reward to use in the next run
         # apply s <- s'
         self.old_state = state
         self.last_action = action
         self.last_reward = reward
-        # make sure that the current state has at the current reward
-        self.q_table[str(self.old_state)][self.last_action] = self.last_reward
+        # make sure that the current state has at least the current reward
+        # notice that old_state and last_action is related to the current (s,a)
+        # at this point, and not to (s', a'), as previously used
+        if not self.q_table[str(self.old_state)][self.last_action]:
+            s_aux = str(self.old_state)
+            self.q_table[s_aux][self.last_action] = self.last_reward
 
 
 def run():
     """Run the agent for a finite number of trials."""
-    # Set up environment and agent
-    e = Environment()  # create environment (also adds some dummy traffic)
-    # a = e.create_agent(BasicAgent)  # create agent
-    a = e.create_agent(BasicLearningAgent)  # create agent
+    # # Set up environment and agent
+    # e = Environment()  # create environment (also adds some dummy traffic)
+    # # a = e.create_agent(BasicAgent)  # create agent
+    # # a = e.create_agent(BasicLearningAgent)  # create agent
     # a = e.create_agent(LearningAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
-    # NOTE: You can set enforce_deadline=False while debugging to allow
-    # longer trials
+    # e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
+    # # NOTE: You can set enforce_deadline=False while debugging to allow
+    # # longer trials
 
-    # Now simulate it
-    # create simulator (uses pygame when display=True, if available)
-    sim = Simulator(e, update_delay=0.01, display=False)
-    # NOTE: To speed up simulation,reduce update_delay and/or set display=False
+    # # Now simulate it
+    # # create simulator (uses pygame when display=True, if available)
+    # sim = Simulator(e, update_delay=0.01, display=False)
+    # # NOTE: To speed up simulation,reduce update_delay and/or set display=False
 
-    sim.run(n_trials=100)  # run for a specified number of trials
-    # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C
-    # on the command-line
-    # save the Q table of the primary agent
-    save_q_table(e)
+    # sim.run(n_trials=100)  # run for a specified number of trials
+    # # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C
+    # # on the command-line
+    # # save the Q table of the primary agent
+    # save_q_table(e)
 
     # k tests
     # for f_k in [0.05, 0.1, 0.3, 0.5, 1., 1.5, 2., 3., 5.]:
@@ -342,7 +358,13 @@ def run():
     #     e.set_primary_agent(a, enforce_deadline=True)
     #     sim = Simulator(e, update_delay=0.01, display=False)
     #     sim.run(n_trials=100)
-
+    # gamma test
+    for f_gamma in [0., 0.1, 0.3, 0.5, 0.7, 0.9, 1.]:
+        e = Environment()
+        a = e.create_agent(LearningAgent, f_gamma=f_gamma)
+        e.set_primary_agent(a, enforce_deadline=True)
+        sim = Simulator(e, update_delay=0.01, display=False)
+        sim.run(n_trials=100)
 
 if __name__ == '__main__':
     # run the code

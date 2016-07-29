@@ -205,7 +205,7 @@ The recursive nature of the function above implies that our agent doesn't know t
   \State initialize the table entry $\hat{Q}(s, \, a)$ to zero if there is no entry $(s, \, a)$
   \State Observe the new state $s' = \delta(s, \,a)$
   \State Updates the table entry for $\hat{Q}(s, \, a)$ following:
-    
+
     \do $\hat{Q}(s, \, a) \leftarrow r + \gamma \, \underset{a'}{\max}\, \hat{Q}(s', \, a')$
   \State $s \leftarrow s'$
 \EndLoop
@@ -236,7 +236,7 @@ The agent is reaching its destination much more frequently than before. When the
 \caption{\label{tab:explored_actions}Explored Actions in The Q-Table}
 \end{table}
 
-The agent explored just one possible action in $56\%$ of the states in the Q-Table. According to \cite{Mitchell}, there are some conditions to ensure that the algorithm converges toward a $\hat{Q}$ equal to the true $Q$ function. One of them is that the system should be a deterministic MDP. Another is that the agent must select actions in a way that it visits every possible state-action pair infinitely often. Looking at the number of times this implementation of the agent explored all $4$ possibles actions, I would say that it isn't true. In the next section, I will try to improve te agent's performance.
+The agent explored just one possible action in $56\%$ of the states in the Q-Table. According to \cite{Mitchell}, there are some conditions to ensure that the algorithm converges toward a $\hat{Q}$ equal to the true $Q$ function. One of them is that the system should be a deterministic MDP. Another is that the agent must select actions in a way that it visits every possible state-action pair infinitely often. Looking at the number of times this implementation of the agent explored all $4$ possibles actions (less than $7\%$ of the states), I would say that it isn't true. In the next section, I will try to improve te agent's performance.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ENHANCE DRIVING AGENT
@@ -244,13 +244,77 @@ The agent explored just one possible action in $56\%$ of the states in the Q-Tab
 
 \section{Enhance the Driving Agent}
 \label{sec:enhance_driving_agent}
-In this section, ...
+In this section, I will try to improve the driving agent to make it consistently reaches the destination within allotted time and the net reward positive.
 
 \subsection{Experimentation Strategies}
-bla bla bla
+One of the issues of the current strategy is that the agent could overcommit to actions that presented positive $\hat{Q}$ values early in the simulation, failing to explore other actions that could present even higher values. \cite{Mitchell} proposed to use a probabilistic approach to select actions, assigning higher probabilities to action with high $\hat{Q}$ values, but given to every action at least a nonzero probability. So, I will implement the following relation:
+
+$$P(a_i\, | \,s ) = \frac{k ^{\hat{Q}(s, a_i)}}{\sum_j k^{\hat{Q}(s, a_j)}}$$
+
+Where $P(a_i\, | \,s )$ is the probability of selecting the action $a_i$ given the state $s$. The constant $k$ is positive and determines how strongly the selection favors action with high $\hat{Q}$ values. Let's look at the number of times the algorithm choose to explore when we vary the value of the $k$.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.75\textwidth]{images/exploint_explore.png}
+\caption{\label{fig:hist_basic_agent}Exploration and Exploitation Ratio By Value of $k$}
+\end{figure}
+
+As can be seen above, large values of $k$ assigned a higher probability of the agent exploits what it already has learned. Small values have made the agent favor the exploration of new actions. Now, let's see how the different values of $k$ impacted on the times the agent completed the routes.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.75\textwidth]{images/success_runs.png}
+\caption{\label{fig:hist_basic_agent}On Time Ratio By Value of $k$}
+\end{figure}
+
+The agent presented a very steep improvement as $k$ was approaching $2$. Above this value, the completed trips ratio just showed a slight growth. Now, let's check how the number of trials changed the average reward received by the agent.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.75\textwidth]{images/cum_reard_by_k.png}
+\caption{\label{fig:hist_basic_agent}Average Cumulative Reward By Value of $k$}
+\end{figure}
+
+Clearly, small values of $k$ are worst than large values. As I want that my agent has some probability of exploring new actions, and it seems that $k=2$ is the best choice (the "slope" is not so steep, and the start value is pretty high), I will use this parameter to perform the next simulations.
 
 \subsection{Nondeterministic Rewards and Actions}
-bla bla bla
+The last modification that I want to introduce is when the environment is non-deterministic. As I said before, the algorithm used is appropriate to the deterministic case. On a nondeterministic environment, the reward function $r(s,\,a)$ and action transition function $\delta(s,\,a)$ may have probabilistic outcomes. As there are other agents in the smartcab world, I believe that it is a proper assumption.
+
+As explained by \cite{Mitchell}, to handle nondeterministic MDPs, it is needed to redefine the value $V^{*}$ to be expressed as a expected value. So, jumping to the $Q$ function, we can re-express $Q$ recursively as:
+
+\begin{equation}
+\begin{aligned}
+Q(s, \, a) &= E \left [r(s, a) \right ] + E \left [\gamma \, \underset{a'}{\max} \, Q(\delta(s,\, a), \, a')\right ]\\
+&= E \left [r(s, a) \right ] + \gamma \,  E \left [\underset{a'}{\max} \, Q(\delta(s,\, a), \, a')\right ]\\
+&= E \left [r(s, a) \right ] + \gamma \,  \sum_{s'} P\left(s' \,| \,s, a   \right) \underset{a'}{\max} \, Q(\delta(s,\, a), \, a')
+\end{aligned}
+\end{equation}
+
+Where $P\left(s' \,| \,s, a   \right)$ is the probability that taking action $a$ in state $s$ will produce the next state $s'$. To implement that, we need to assume that the $\hat{Q}$ values in our table may be wrong, due to the nondeterministic behavior of our environment. So, \cite{Mitchell} suggested to modifying the training rule by introducing a decaying weighted average factor to the current $\hat{Q}$ value and to the revised estimate, such that:
+
+$$\hat{Q}(s, \, a) \leftarrow  (1 - \alpha_{n})\, \hat{Q}_{n-1}(s, \, a) +  \alpha_{n}\left[ r + \gamma \underset{a'}{\max} \hat{Q}_{n-1}(s', \, a') \right ]$$
+
+Where $\alpha_{n} = \frac{1}{1 + visits_{n}(s, \,a)}$ is the decaying factor and $visits_{n}$ is the total number of times this state-action $(s, \, a)$ pair has been visited. So, let's put it in practice.
+
+\begin{lstlisting}
+Number of Trials: 100
+Times that the agent reached the target location: 58
+Times the agent reached the hard deadline: 42
+Times the agent successfully reached the target location: 58
+\end{lstlisting}
+
+Looking just at the times the agent has completed the route, it doesn't look like we made much progress. I will compare the performance of all the agents created so far in the last section.
+
+\subsection{Nondeterministic Rewards and Actions}
+There is just one remain parameter of the model that was not explored yet:  the $\gamma$. As already explained, the $\gamma$ in the $\hat{Q}$ function is a factor used to discount the immediate successor state to be used to update $\hat{Q}$ table. As $\gamma$ approaches $0$, less "memory" the agent has. So, let's check what happens when we vary this parameter about the average cumulative reward of the learning agent:
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.75\textwidth]{images/cum_reard_by_gamma.png}
+\caption{\label{fig:hist_basic_agent}Average Cumulative Reward By Value of $\gamma$}
+\end{figure}
+
+In the last section, I will use $\gamma = 0.5$ to perform the final compartitions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CONCLUSION
