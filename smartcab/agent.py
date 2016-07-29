@@ -264,7 +264,7 @@ class LearningAgent(LearningAgent_k):
     is a non-deterministic MDP using Q-learning and adopts a probabilistic
     approach to select actions
     '''
-    def __init__(self, env, f_gamma=0.9, f_k=0.3):
+    def __init__(self, env, f_gamma=0.9, f_k=2.):
         '''
         Initialize a LearningAgent. Save all parameters as attributes
         :param env: Environment object. The grid-like world
