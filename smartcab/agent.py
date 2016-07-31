@@ -19,7 +19,7 @@ from collections import defaultdict
 import pandas as pd
 
 # Log finle enabled. global variable
-DEBUG = True
+DEBUG = False
 
 # setup logging messages
 s_format = '%(asctime)s;%(message)s'
@@ -333,16 +333,16 @@ def run():
     """Run the agent for a finite number of trials."""
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
-    a = e.create_agent(BasicAgent)  # create agent
+    # a = e.create_agent(BasicAgent)  # create agent
     # a = e.create_agent(BasicLearningAgent)  # create agent
-    # a = e.create_agent(LearningAgent)  # create agent
+    a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
     # longer trials
 
     # Now simulate it
     # create simulator (uses pygame when display=True, if available)
-    sim = Simulator(e, update_delay=0.01, display=False)
+    sim = Simulator(e, update_delay=0.5, display=True)
     # NOTE: To speed up simulation,reduce update_delay and/or set display=False
 
     sim.run(n_trials=100)  # run for a specified number of trials
