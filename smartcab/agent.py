@@ -268,7 +268,7 @@ class LearningAgent(LearningAgent_k):
     is a non-deterministic MDP using Q-learning and adopts a probabilistic
     approach to select actions
     '''
-    def __init__(self, env, f_gamma=0.9, f_k=2.):
+    def __init__(self, env, f_gamma=0.5, f_k=2.):
         '''
         Initialize a LearningAgent. Save all parameters as attributes
         :param env: Environment object. The grid-like world
@@ -331,40 +331,40 @@ class LearningAgent(LearningAgent_k):
 
 def run():
     """Run the agent for a finite number of trials."""
-    # # Set up environment and agent
-    # e = Environment()  # create environment (also adds some dummy traffic)
-    # # a = e.create_agent(BasicAgent)  # create agent
-    # # a = e.create_agent(BasicLearningAgent)  # create agent
+    # Set up environment and agent
+    e = Environment()  # create environment (also adds some dummy traffic)
+    a = e.create_agent(BasicAgent)  # create agent
+    # a = e.create_agent(BasicLearningAgent)  # create agent
     # a = e.create_agent(LearningAgent)  # create agent
-    # e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
-    # # NOTE: You can set enforce_deadline=False while debugging to allow
-    # # longer trials
+    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
+    # NOTE: You can set enforce_deadline=False while debugging to allow
+    # longer trials
 
-    # # Now simulate it
-    # # create simulator (uses pygame when display=True, if available)
-    # sim = Simulator(e, update_delay=0.01, display=False)
-    # # NOTE: To speed up simulation,reduce update_delay and/or set display=False
+    # Now simulate it
+    # create simulator (uses pygame when display=True, if available)
+    sim = Simulator(e, update_delay=0.01, display=False)
+    # NOTE: To speed up simulation,reduce update_delay and/or set display=False
 
-    # sim.run(n_trials=100)  # run for a specified number of trials
-    # # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C
-    # # on the command-line
-    # # save the Q table of the primary agent
-    # save_q_table(e)
+    sim.run(n_trials=100)  # run for a specified number of trials
+    # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C
+    # on the command-line
+    # save the Q table of the primary agent
+    save_q_table(e)
 
     # k tests
     # for f_k in [0.05, 0.1, 0.3, 0.5, 1., 1.5, 2., 3., 5.]:
-    #     e = Environment()
-    #     a = e.create_agent(LearningAgent_k, f_k=f_k)
-    #     e.set_primary_agent(a, enforce_deadline=True)
-    #     sim = Simulator(e, update_delay=0.01, display=False)
-    #     sim.run(n_trials=100)
+        # e = Environment()
+        # a = e.create_agent(LearningAgent_k, f_k=f_k)
+        # e.set_primary_agent(a, enforce_deadline=True)
+        # sim = Simulator(e, update_delay=0.01, display=False)
+        # sim.run(n_trials=100)
     # gamma test
-    for f_gamma in [0., 0.1, 0.3, 0.5, 0.7, 0.9, 1.]:
-        e = Environment()
-        a = e.create_agent(LearningAgent, f_gamma=f_gamma)
-        e.set_primary_agent(a, enforce_deadline=True)
-        sim = Simulator(e, update_delay=0.01, display=False)
-        sim.run(n_trials=100)
+    # for f_gamma in [0., 0.1, 0.3, 0.5, 0.7, 0.9, 1.]:
+        # e = Environment()
+        # a = e.create_agent(LearningAgent, f_gamma=f_gamma)
+        # e.set_primary_agent(a, enforce_deadline=True)
+        # sim = Simulator(e, update_delay=0.01, display=False)
+        # sim.run(n_trials=100)
 
 if __name__ == '__main__':
     # run the code

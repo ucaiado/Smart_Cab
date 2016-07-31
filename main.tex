@@ -256,7 +256,7 @@ Where $P(a_i\, | \,s )$ is the probability of selecting the action $a_i$ given t
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.75\textwidth]{images/exploint_explore.png}
-\caption{\label{fig:hist_basic_agent}Exploration and Exploitation Ratio By Value of $k$}
+\caption{\label{fig:exploint_explore}Exploration and Exploitation Ratio By Value of $k$}
 \end{figure}
 
 As can be seen above, large values of $k$ assigned a higher probability of the agent exploits what it already has learned. Small values have made the agent favor the exploration of new actions. Now, let's see how the different values of $k$ impacted on the times the agent completed the routes.
@@ -264,15 +264,15 @@ As can be seen above, large values of $k$ assigned a higher probability of the a
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.75\textwidth]{images/success_runs.png}
-\caption{\label{fig:hist_basic_agent}On Time Ratio By Value of $k$}
+\caption{\label{fig:success_runs}On Time Ratio By Value of $k$}
 \end{figure}
 
 The agent presented a very steep improvement as $k$ was approaching $2$. Above this value, the completed trips ratio just showed a slight growth. Now, let's check how the number of trials changed the average reward received by the agent.
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=0.75\textwidth]{images/cum_reard_by_k.png}
-\caption{\label{fig:hist_basic_agent}Average Cumulative Reward By Value of $k$}
+\includegraphics[width=0.75\textwidth]{images/cum_reward_by_k.png}
+\caption{\label{fig:cum_reward_by_k}Average Cumulative Reward By Value of $k$}
 \end{figure}
 
 Clearly, small values of $k$ are worst than large values. As I want that my agent has some probability of exploring new actions, and it seems that $k=2$ is the best choice (the "slope" is not so steep, and the start value is pretty high), I will use this parameter to perform the next simulations.
@@ -311,10 +311,10 @@ There is just one remain parameter of the model that was not explored yet:  the 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.75\textwidth]{images/cum_reard_by_gamma.png}
-\caption{\label{fig:hist_basic_agent}Average Cumulative Reward By Value of $\gamma$}
+\caption{\label{fig:avg_cum_rwd}Average Cumulative Reward By Value of $\gamma$}
 \end{figure}
 
-In the last section, I will use $\gamma = 0.5$ to perform the final compartitions.
+In the last section, I will use $\gamma = 0.5$ to perform the final tests.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CONCLUSION
@@ -323,7 +323,20 @@ In the last section, I will use $\gamma = 0.5$ to perform the final compartition
 \section{Conclusion}
 \label{sec:conclusion}
 
-As stated in ...
+The goal of the whole project was to build an agent that obeys traffic rules correctly and reachs the destination within an allotted time. So, the "perfect" agent would be the one that always come to the destination in the goal time without any penalty.
+
+However, as our environment is non-deterministic, to always reach the destination on time is not reasonable. Also, as the environment penalizes the agent even when it makes a correct move, but in a distinct direction from the target location, it isn't fair to expect that the perfect agent never incurs any penalty.
+
+So, the best one would be the one that learns a reasonable policy fast and receives the maximum average cumulative reward possible. Average because we should weight the rewards received by the number of steps used to avoid discrepancies. In this sense, let's first compare how the modifications made on this project reflected on our agent when we ensure deadline. The improved agent will be set with $\gamma=0.5$ and $k=2$.
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.75\textwidth]{images/performance_comparition.png}
+\caption{\label{fig:perf_compr}Cumulative Reward By Agent}
+\end{figure}
+
+As can be seen above, the improved agent did better than the other implementations. It reached the destination $65\%$ of the trials on time and the final average reward by action was greater than the others. It was achieved by tuning the parameters, including an experimentation strategy and changing the $\hat{Q}$ function to deal with the non-deterministic environment, as explained before. The random agent reached the destination on time just $42\%$ of the trials and the agent that used the deterministic version of $\hat{Q}$ function, $55\%$. Although the final agent is still incurring penalties, it is closer to a perfect agent than it was when using just random moves.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% REFLECTION
@@ -331,7 +344,7 @@ As stated in ...
 
 \section{Reflection}
 \label{sec:reflection}
-Given that ...
+It's hard to say how better would be the performance of a perfect agent to contrast to the current implementation, given the stochastic environment. An option would be to implement a learning agent that already knows the traffic rules and just need to learn how to find his way to the destination on time.
 
 
 
