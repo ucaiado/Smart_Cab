@@ -9,6 +9,9 @@
 \usepackage{listings}
 \usepackage[numbers]{natbib}
 
+\usepackage{graphicx}
+\usepackage{babel,blindtext}
+
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
@@ -251,22 +254,22 @@ One of the issues of the current strategy is that the agent could overcommit to 
 
 $$P(a_i\, | \,s ) = \frac{k ^{\hat{Q}(s, a_i)}}{\sum_j k^{\hat{Q}(s, a_j)}}$$
 
-Where $P(a_i\, | \,s )$ is the probability of selecting the action $a_i$ given the state $s$. The constant $k$ is positive and determines how strongly the selection favors action with high $\hat{Q}$ values. Let's look at the number of times the algorithm choose to explore when we vary the value of the $k$.
+Where $P(a_i\, | \,s )$ is the probability of selecting the action $a_i$ given the state $s$. The constant $k$ is positive and determines how strongly the selection favors action with high $\hat{Q}$ values. In the figure \ref{fig:exploint_explore} we can see the number of times the algorithm choose to explore when we vary the value of the $k$.
+
+Large values of $k$ assigned a higher probability of the agent exploits what it already has learned. Small values have made the agent favor the exploration of new actions. In the figure \ref{fig:success_runs} we can check how the different values of $k$ impacted on the times the agent completed the routes.
 
 \begin{figure}[ht!]
-\centering
-\includegraphics[width=0.75\textwidth]{images/exploint_explore.png}
-\caption{\label{fig:exploint_explore}Exploration and Exploitation Ratio By Value of $k$}
+\minipage{0.49\textwidth}
+  \includegraphics[width=\linewidth]{images/exploint_explore.png}
+  \caption{\label{fig:exploint_explore}Exploration vs Exploitation}
+\endminipage
+\minipage{0.49\textwidth}
+  \includegraphics[width=\linewidth]{images/success_runs.png}
+  \caption{\label{fig:success_runs}On Time Ratio}
+\endminipage
 \end{figure}
 
-As can be seen above, large values of $k$ assigned a higher probability of the agent exploits what it already has learned. Small values have made the agent favor the exploration of new actions. Now, let's see how the different values of $k$ impacted on the times the agent completed the routes.
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.75\textwidth]{images/success_runs.png}
-\caption{\label{fig:success_runs}On Time Ratio By Value of $k$}
-\end{figure}
-
+\newpage
 The agent presented a very steep improvement as $k$ was approaching $2$. Above this value, the completed trips ratio just showed a slight growth. Now, let's check how the number of trials changed the average reward received by the agent.
 
 \begin{figure}[ht!]
@@ -275,7 +278,7 @@ The agent presented a very steep improvement as $k$ was approaching $2$. Above t
 \caption{\label{fig:cum_reward_by_k}Average Cumulative Reward By Value of $k$}
 \end{figure}
 
-Clearly, small values of $k$ are worst than large values. As I want that my agent has some probability of exploring new actions, and it seems that $k=2$ is the best choice (the "slope" is not so steep, and the start value is pretty high), I will use this parameter to perform the next simulations.
+Clearly, small values of $k$ are worst than large values, as can be seen at the figure \ref{fig:cum_reward_by_k}. As I want that my agent has some probability of exploring new actions, and it seems that $k=2$ is the best choice (the "slope" is not so steep, and the start value is pretty high), I will use this parameter to perform the next simulations.
 
 \subsection{Nondeterministic Rewards and Actions}
 The last modification that I want to introduce is when the environment is non-deterministic. As I said before, the algorithm used is appropriate to the deterministic case. On a nondeterministic environment, the reward function $r(s,\,a)$ and action transition function $\delta(s,\,a)$ may have probabilistic outcomes. As there are other agents in the smartcab world, I believe that it is a proper assumption.
@@ -300,17 +303,17 @@ Where $\alpha_{n} = \frac{1}{1 + visits_{n}(s, \,a)}$ is the decaying factor and
 Number of Trials: 100
 Times that the agent reached the target location: 58
 Times the agent reached the hard deadline: 42
-Times the agent successfully reached the target location: 58
+Times the agent successfully reached the target: 58
 \end{lstlisting}
 
 Looking just at the times the agent has completed the route, it doesn't look like we made much progress. I will compare the performance of all the agents created so far in the last section.
 
-\subsection{Nondeterministic Rewards and Actions}
+\subsection{Non-deterministic Rewards and Actions}
 There is just one remain parameter of the model that was not explored yet:  the $\gamma$. As already explained, the $\gamma$ in the $\hat{Q}$ function is a factor used to discount the immediate successor state to be used to update $\hat{Q}$ table. As $\gamma$ approaches $0$, less "memory" the agent has. So, let's check what happens when we vary this parameter about the average cumulative reward of the learning agent:
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=0.75\textwidth]{images/cum_reard_by_gamma.png}
+\includegraphics[width=0.75\textwidth]{images/cum_reward_by_gamma.png}
 \caption{\label{fig:avg_cum_rwd}Average Cumulative Reward By Value of $\gamma$}
 \end{figure}
 
