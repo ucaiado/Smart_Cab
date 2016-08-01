@@ -19,7 +19,7 @@ from collections import defaultdict
 import pandas as pd
 
 # Log finle enabled. global variable
-DEBUG = False
+DEBUG = True
 
 # setup logging messages
 s_format = '%(asctime)s;%(message)s'
@@ -102,7 +102,7 @@ class BasicAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        self.state = (inputs, self.next_waypoint, deadline)
+        self.state = (inputs, self.next_waypoint)
 
         # TODO: Select action according to your policy
         action = self._take_action(self.state)
@@ -248,12 +248,15 @@ class LearningAgent_k(BasicLearningAgent):
                 f_count += 1
                 cum_prob += self.f_k ** val
             if val > max_val:
-                max_val = val
+                max_val = self.f_k ** max_val
                 best_Action = action
         # choose the best_action just if: eps <= k**thisQhat / sum(k**Qhat)
         # if the agent still did not test all actions: (4. - f_count) * k**0.25
-        f_prob = ((self.f_k ** max_val) /
+        f_prob = ((max_val) /
                   ((4. - f_count) * 0.2 + cum_prob))
+        print "PROB: {:.2f}".format(f_prob)
+        if f_prob > 1.:
+            print '======= greater ======: cum: {} best: {}'.format(cum_prob, max_val)
         if (random.random() <= f_prob):
             root.debug('action: explotation, k = {}'.format(self.f_k))
             return best_Action
@@ -335,14 +338,15 @@ def run():
     e = Environment()  # create environment (also adds some dummy traffic)
     # a = e.create_agent(BasicAgent)  # create agent
     # a = e.create_agent(BasicLearningAgent)  # create agent
-    a = e.create_agent(LearningAgent)  # create agent
+    a = e.create_agent(LearningAgent_k, f_k=0.5)
+    # a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
     # longer trials
 
     # Now simulate it
     # create simulator (uses pygame when display=True, if available)
-    sim = Simulator(e, update_delay=0.5, display=True)
+    sim = Simulator(e, update_delay=0.01, display=False)
     # NOTE: To speed up simulation,reduce update_delay and/or set display=False
 
     sim.run(n_trials=100)  # run for a specified number of trials
@@ -352,12 +356,12 @@ def run():
     save_q_table(e)
 
     # k tests
-    # for f_k in [0.05, 0.1, 0.3, 0.5, 1., 1.5, 2., 3., 5.]:
-        # e = Environment()
-        # a = e.create_agent(LearningAgent_k, f_k=f_k)
-        # e.set_primary_agent(a, enforce_deadline=True)
-        # sim = Simulator(e, update_delay=0.01, display=False)
-        # sim.run(n_trials=100)
+    # for f_k in [0.1, 0.3, 0.5, 1., 1.5, 2., 3., 5.]:
+    #     e = Environment()
+    #     a = e.create_agent(LearningAgent_k, f_k=f_k)
+    #     e.set_primary_agent(a, enforce_deadline=True)
+    #     sim = Simulator(e, update_delay=0.01, display=False)
+    #     sim.run(n_trials=100)
     # gamma test
     # for f_gamma in [0., 0.1, 0.3, 0.5, 0.7, 0.9, 1.]:
         # e = Environment()

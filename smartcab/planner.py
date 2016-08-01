@@ -2,7 +2,7 @@ import random
 import logging
 
 # global variable
-DEBUG = False
+DEBUG = True
 
 class RoutePlanner(object):
     """Silly route planner that is meant for a perpendicular grid network."""

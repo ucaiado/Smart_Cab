@@ -6,7 +6,7 @@ from simulator import Simulator
 import logging
 
 # global variable
-DEBUG = False
+DEBUG = True
 
 
 class TrafficLight(object):

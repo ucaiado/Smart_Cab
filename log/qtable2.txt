@@ -1,0 +1,47 @@
+		forward	left	right
+({'light': 'green', 'oncoming': 'forward', 'right': None, 'left': None}, 'forward')		12.3157686346		
+({'light': 'green', 'oncoming': 'left', 'right': None, 'left': None}, 'forward')	0.0		12.1698463434	
+({'light': 'green', 'oncoming': 'left', 'right': None, 'left': None}, 'left')		7.490306623		
+({'light': 'green', 'oncoming': 'left', 'right': None, 'left': None}, 'right')	0.0		12.3973337972	
+({'light': 'green', 'oncoming': 'right', 'right': None, 'left': None}, 'forward')				10.2805130478
+({'light': 'green', 'oncoming': None, 'right': 'forward', 'left': None}, 'forward')			7.31930075374	
+({'light': 'green', 'oncoming': None, 'right': 'forward', 'left': None}, 'left')				11.7918179843
+({'light': 'green', 'oncoming': None, 'right': 'forward', 'left': None}, 'right')	13.1485829807			
+({'light': 'green', 'oncoming': None, 'right': 'left', 'left': None}, 'forward')				4.378
+({'light': 'green', 'oncoming': None, 'right': 'left', 'left': None}, 'right')				10.258804568
+({'light': 'green', 'oncoming': None, 'right': 'right', 'left': None}, 'forward')	0.0	10.4367104919		
+({'light': 'green', 'oncoming': None, 'right': 'right', 'left': None}, 'left')				7.26936849879
+({'light': 'green', 'oncoming': None, 'right': 'right', 'left': None}, 'right')		1.3		
+({'light': 'green', 'oncoming': None, 'right': None, 'left': 'forward'}, 'forward')	0.0			
+({'light': 'green', 'oncoming': None, 'right': None, 'left': 'forward'}, 'left')				12.2025422682
+({'light': 'green', 'oncoming': None, 'right': None, 'left': 'forward'}, 'right')		9.7597360546		
+({'light': 'green', 'oncoming': None, 'right': None, 'left': 'left'}, 'forward')		10.4975071254		
+({'light': 'green', 'oncoming': None, 'right': None, 'left': 'left'}, 'left')				1.3
+({'light': 'green', 'oncoming': None, 'right': None, 'left': 'left'}, 'right')	0.0		2.92	
+({'light': 'green', 'oncoming': None, 'right': None, 'left': 'right'}, 'forward')			4.35822952	
+({'light': 'green', 'oncoming': None, 'right': None, 'left': 'right'}, 'right')			2.0745503032	
+({'light': 'green', 'oncoming': None, 'right': None, 'left': None}, 'forward')		11.5257725941		-0.5
+({'light': 'green', 'oncoming': None, 'right': None, 'left': None}, 'left')	0.0	-0.5	7.34618	
+({'light': 'green', 'oncoming': None, 'right': None, 'left': None}, 'right')	0.0	-0.5		12.3731953347
+({'light': 'red', 'oncoming': 'forward', 'right': None, 'left': None}, 'forward')	0.0			7.12006278928
+({'light': 'red', 'oncoming': 'forward', 'right': None, 'left': None}, 'left')	1.8	-1.9		
+({'light': 'red', 'oncoming': 'forward', 'right': None, 'left': None}, 'right')				5.50974333029
+({'light': 'red', 'oncoming': 'left', 'right': None, 'left': 'right'}, 'forward')		7.57725595645		
+({'light': 'red', 'oncoming': 'left', 'right': None, 'left': None}, 'forward')	0.0		-1.0	8.9898889256
+({'light': 'red', 'oncoming': 'left', 'right': None, 'left': None}, 'left')			-1.9	
+({'light': 'red', 'oncoming': 'left', 'right': None, 'left': None}, 'right')	0.0	-1.0	-1.0	9.56755289513
+({'light': 'red', 'oncoming': 'right', 'right': None, 'left': None}, 'forward')		5.30082819035		
+({'light': 'red', 'oncoming': 'right', 'right': None, 'left': None}, 'left')				1.3
+({'light': 'red', 'oncoming': 'right', 'right': None, 'left': None}, 'right')			3.0032	
+({'light': 'red', 'oncoming': None, 'right': 'forward', 'left': None}, 'left')				9.44663874538
+({'light': 'red', 'oncoming': None, 'right': 'forward', 'left': None}, 'right')		2.995082		
+({'light': 'red', 'oncoming': None, 'right': 'left', 'left': None}, 'forward')	4.2779663307			
+({'light': 'red', 'oncoming': None, 'right': 'left', 'left': None}, 'left')		3.958793577		
+({'light': 'red', 'oncoming': None, 'right': 'right', 'left': None}, 'forward')			8.1638034857	
+({'light': 'red', 'oncoming': None, 'right': None, 'left': 'forward'}, 'forward')		0.499307888739		
+({'light': 'red', 'oncoming': None, 'right': None, 'left': 'left'}, 'forward')				9.4275091719
+({'light': 'red', 'oncoming': None, 'right': None, 'left': 'left'}, 'right')	-0.45		0.4355	
+({'light': 'red', 'oncoming': None, 'right': None, 'left': 'right'}, 'forward')				4.407020923
+({'light': 'red', 'oncoming': None, 'right': None, 'left': None}, 'forward')	0.0	-1.0	-1.0	6.151538173
+({'light': 'red', 'oncoming': None, 'right': None, 'left': None}, 'left')	0.0	-1.0	-1.0	7.20542429763
+({'light': 'red', 'oncoming': None, 'right': None, 'left': None}, 'right')		-1.9	-1.9	5.9402

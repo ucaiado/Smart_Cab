@@ -107,14 +107,14 @@ As mentioned before, I am going to implement a smartcab that processes the follo
 For the purposes of this project, the agent should produce just some random move, like \textit{'None'}, \textit{'forward'}, \textit{'left'} and \textit{'right'}. I will not implement the correct strategy because it is precisely what my agent is supposed to learn.
 
 For the purposes of this project, the first implementation of the agent should produce just some random move at each time $t$, such that $a_t \in (None,\, forward,\,$
-$ left,\, right)$. I will not implement the correct strategy because it is precisely what my agent is supposed to learn. Below I am going to simulate $99$ different trials with the \textit{'enforce\_deadline'} set to False and will save the logs produced by the agent to observe how it performs. In this mode, the agent is given unlimited time to reach the destination.
+$ left,\, right)$. I will not implement the correct strategy because it is precisely what my agent is supposed to learn. Below I am going to simulate $100$ different trials with the \textit{'enforce\_deadline'} set to False and will save the logs produced by the agent to observe how it performs. In this mode, the agent is given unlimited time to reach the destination.
 
 % code snipet
 \begin{lstlisting}
-Number of Trials: 99
-Times that the agent reached the target location: 68
+Number of Trials: 100
+Times that the agent reached the target location: 69
 Times the agent reached the hard deadline: 31
-Times the agent successfully reached the target: 20
+Times the agent successfully reached the target: 21
 \end{lstlisting}
 
 As can be seen above, even using just random moves, the agent still was able to reach the target destination roughly $20\%$ of the trials at the deadline stipulated by the Planner. If we considering all the times it reached the location, it was able to complete the route almost $70\%$ of the trials. Now, I am going to produce same basic statistics about the times that it reached the target location.
@@ -127,7 +127,7 @@ As can be seen above, even using just random moves, the agent still was able to 
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{l|rrrrrr}
+\begin{tabular}{l|r}
 \multicolumn{2}{ c }{Number Of Steps} \\
 \midrule
 mean  &         59.00 \\
