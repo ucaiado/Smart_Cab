@@ -102,7 +102,7 @@ class BasicAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        self.state = (inputs, self.next_waypoint)
+        self.state = self._get_intern_state(inputs, deadline)
 
         # TODO: Select action according to your policy
         action = self._take_action(self.state)
@@ -122,6 +122,14 @@ class BasicAgent(Agent):
                        self.next_waypoint))
         else:
             print s_rtn.format(deadline, inputs, action, reward)
+
+    def _get_intern_state(self, inputs, deadline):
+        '''
+        Return a tuple representing the intern state of the agent
+        :param inputs: dictionary. traffic light and presence of cars
+        :param deadline: integer. time steps remaining
+        '''
+        return (inputs, self.next_waypoint, deadline)
 
     def _take_action(self, t_state):
         '''
@@ -238,22 +246,22 @@ class LearningAgent_k(BasicLearningAgent):
         '''
         # set a random action in case of exploring world
         max_val = 0.
-        cum_prob = 0.
+        cum_prob = 1.
         f_count = 0.
         f_prob = 0.
         best_Action = random.choice(Environment.valid_actions)
         # arg max Q-value choosing a action better than zero
         for action, val in self.q_table[str(t_state)].iteritems():
             # just consider action with positive rewards
-            # due to the possibility to use k < 1.
+            # due to the possibility to use 0 < k < 1.
             if val > 0.:
                 f_count += 1.
                 cum_prob += self.f_k ** val
                 if val > max_val:
                     max_val = val
                     best_Action = action
-        # if the agent still did not test all actions: (4. - f_count) * 0.10
-        f_prob = ((self.f_k ** max_val) / ((4. - f_count) * 0.10 + cum_prob))
+        # if the agent still did not test all actions: (4. - f_count) * 0.25
+        f_prob = ((self.f_k ** max_val) / ((4. - f_count) * 0.08 + cum_prob))
         # print 'PROB: {:.2f}'.format(f_prob)
         # choose the best_action just if: eps <= k**thisQhat / sum(k**Qhat)
         if (random.random() <= f_prob):
@@ -264,22 +272,22 @@ class LearningAgent_k(BasicLearningAgent):
             return random.choice(Environment.valid_actions)
 
 
-class LearningAgent(LearningAgent_k):
+class LearningAgent_old(LearningAgent_k):
     '''
     A representation of an agent that learns to drive assuming that the world
     is a non-deterministic MDP using Q-learning and adopts a probabilistic
     approach to select actions
     '''
-    def __init__(self, env, f_gamma=0.9, f_k=3.):
+    def __init__(self, env, f_gamma=0.3, f_k=3.):
         '''
-        Initialize a LearningAgent. Save all parameters as attributes
+        Initialize a LearningAgent_old. Save all parameters as attributes
         :param env: Environment object. The grid-like world
         :*param f_gamma: float. weight of delayed versus immediate rewards
         :*param f_k: float. How strongly should favor high Q-hat values
         '''
         # sets self.env = env, state = None, next_waypoint = None, and a
         # default color
-        super(LearningAgent, self).__init__(env, f_gamma, f_k)
+        super(LearningAgent_old, self).__init__(env, f_gamma, f_k)
         # override color
         self.color = 'red'
         # TODO: Initialize any additional variables here
@@ -331,14 +339,43 @@ class LearningAgent(LearningAgent_k):
             self.q_table[s_aux][self.last_action] = self.last_reward
 
 
+class LearningAgent(LearningAgent_old):
+    '''
+    A representation of an agent that learns to drive assuming that the world
+    is a non-deterministic MDP using Q-learning and adopts a probabilistic
+    approach to select actions
+    '''
+    def __init__(self, env, f_gamma=0.3, f_k=3.):
+        '''
+        Initialize a LearningAgent. Save all parameters as attributes
+        :param env: Environment object. The grid-like world
+        :*param f_gamma: float. weight of delayed versus immediate rewards
+        :*param f_k: float. How strongly should favor high Q-hat values
+        '''
+        # sets self.env = env, state = None, next_waypoint = None, and a
+        # default color
+        super(LearningAgent, self).__init__(env, f_gamma, f_k)
+        # override color
+        self.color = 'red'
+
+    def _get_intern_state(self, inputs, deadline):
+        '''
+        Return a tuple representing the intern state of the agent
+        :param inputs: dictionary. traffic light and presence of cars
+        :param deadline: integer. time steps remaining
+        '''
+        return (inputs, self.next_waypoint)
+
+
 def run():
     """Run the agent for a finite number of trials."""
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
     # a = e.create_agent(BasicAgent)  # create agent
-    a = e.create_agent(BasicLearningAgent)  # create agent
+    # a = e.create_agent(BasicLearningAgent)  # create agent
     # a = e.create_agent(LearningAgent_k, f_k=0.5)
     # a = e.create_agent(LearningAgent)  # create agent
+    a = e.create_agent(LearningAgent_new)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
     # longer trials
@@ -362,7 +399,7 @@ def run():
     #     sim = Simulator(e, update_delay=0.01, display=False)
     #     sim.run(n_trials=100)
     # gamma test
-    # for f_gamma in [0., 0.1, 0.3, 0.5, 0.7, 0.9, 1.]:
+    # for f_gamma in [0.1, 0.3, 0.5, 0.7, 0.9, 1.]:
     #     e = Environment()
     #     a = e.create_agent(LearningAgent, f_gamma=f_gamma)
     #     e.set_primary_agent(a, enforce_deadline=True)
