@@ -145,7 +145,7 @@ class BasicLearningAgent(BasicAgent):
     A representation of an agent that learns using a basic implementation of
     Q-learning that is suited for deterministic Markov decision processes
     '''
-    def __init__(self, env, f_gamma=0.9):
+    def __init__(self, env, f_gamma=0.5):
         '''
         Initialize a BasicLearningAgent. Save all parameters as attributes
         :param env: Environment object. The grid-like world
@@ -216,7 +216,7 @@ class LearningAgent_k(BasicLearningAgent):
     A representation of an agent that learns to drive adopting a probabilistic
     approach to select actions
     '''
-    def __init__(self, env, f_gamma=0.9, f_k=0.3):
+    def __init__(self, env, f_gamma=0.3, f_k=0.3):
         '''
         Initialize a LearningAgent_k. Save all parameters as attributes
         :param env: Environment object. The grid-like world
@@ -237,26 +237,25 @@ class LearningAgent_k(BasicLearningAgent):
         :param t_state: tuple. The inputs to be considered by the agent
         '''
         # set a random action in case of exploring world
-        max_val = 0
+        max_val = 0.
         cum_prob = 0.
         f_count = 0.
+        f_prob = 0.
         best_Action = random.choice(Environment.valid_actions)
         # arg max Q-value choosing a action better than zero
         for action, val in self.q_table[str(t_state)].iteritems():
             # just consider action with positive rewards
-            if val > 0:
-                f_count += 1
+            # due to the possibility to use k < 1.
+            if val > 0.:
+                f_count += 1.
                 cum_prob += self.f_k ** val
-            if val > max_val:
-                max_val = self.f_k ** max_val
-                best_Action = action
+                if val > max_val:
+                    max_val = val
+                    best_Action = action
+        # if the agent still did not test all actions: (4. - f_count) * 0.10
+        f_prob = ((self.f_k ** max_val) / ((4. - f_count) * 0.10 + cum_prob))
+        # print 'PROB: {:.2f}'.format(f_prob)
         # choose the best_action just if: eps <= k**thisQhat / sum(k**Qhat)
-        # if the agent still did not test all actions: (4. - f_count) * k**0.25
-        f_prob = ((max_val) /
-                  ((4. - f_count) * 0.2 + cum_prob))
-        print "PROB: {:.2f}".format(f_prob)
-        if f_prob > 1.:
-            print '======= greater ======: cum: {} best: {}'.format(cum_prob, max_val)
         if (random.random() <= f_prob):
             root.debug('action: explotation, k = {}'.format(self.f_k))
             return best_Action
@@ -271,7 +270,7 @@ class LearningAgent(LearningAgent_k):
     is a non-deterministic MDP using Q-learning and adopts a probabilistic
     approach to select actions
     '''
-    def __init__(self, env, f_gamma=0.5, f_k=2.):
+    def __init__(self, env, f_gamma=0.9, f_k=3.):
         '''
         Initialize a LearningAgent. Save all parameters as attributes
         :param env: Environment object. The grid-like world
@@ -337,8 +336,8 @@ def run():
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
     # a = e.create_agent(BasicAgent)  # create agent
-    # a = e.create_agent(BasicLearningAgent)  # create agent
-    a = e.create_agent(LearningAgent_k, f_k=0.5)
+    a = e.create_agent(BasicLearningAgent)  # create agent
+    # a = e.create_agent(LearningAgent_k, f_k=0.5)
     # a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
@@ -364,11 +363,11 @@ def run():
     #     sim.run(n_trials=100)
     # gamma test
     # for f_gamma in [0., 0.1, 0.3, 0.5, 0.7, 0.9, 1.]:
-        # e = Environment()
-        # a = e.create_agent(LearningAgent, f_gamma=f_gamma)
-        # e.set_primary_agent(a, enforce_deadline=True)
-        # sim = Simulator(e, update_delay=0.01, display=False)
-        # sim.run(n_trials=100)
+    #     e = Environment()
+    #     a = e.create_agent(LearningAgent, f_gamma=f_gamma)
+    #     e.set_primary_agent(a, enforce_deadline=True)
+    #     sim = Simulator(e, update_delay=0.01, display=False)
+    #     sim.run(n_trials=100)
 
 if __name__ == '__main__':
     # run the code
