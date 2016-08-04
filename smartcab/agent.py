@@ -19,7 +19,7 @@ from collections import defaultdict
 import pandas as pd
 
 # Log finle enabled. global variable
-DEBUG = True
+DEBUG = False
 
 # setup logging messages
 if DEBUG:
