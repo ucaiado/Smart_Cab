@@ -148,7 +148,7 @@ According to the table \ref{tab:basic_stats}, It took 59 steps on average, and t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Identify and Update State}
-To complete the implementation of my Basic Agent, I still need to decide how it will represent its state internally. Considering the inputs that it receives before performs any action and, consequently, receives a reward, I will use a tuple using all of them to represent the current state of my agent, in the form $(inputs,\, next\_waypoint,\, deadline)$. I believe that it will represent a reasonable set of states that my agent could use to gather more information from the environment.
+To complete the implementation of my Basic Agent, I still need to decide how it will represent its state internally. Considering the inputs that it receives before performs any action and, consequently, receives a reward, I will use a tuple using all of them to represent the current state of my agent, in the form $(inputs,\, next\_waypoint,\, deadline)$. I believe that it will represent a reasonable set of states that my agent could use to gather more information from the environment. Later on, we will see how significant this single decision is when dealing with Reinforcement Learning problem.
 
 $Inputs$ is a dictionary with the state of the traffic light for the agents' direction of movement and the direction of the random agents on each of the incoming roadways (if any). $next_waypoint$ is the direction of the target location and $deadline$, a timer. So, let's count the number of stated that I get when I enforce deadline in my simulation on $100$ trials.
 
@@ -270,7 +270,7 @@ Large values of $k$ assigned a higher probability of the agent exploits what it 
 \end{figure}
 
 \newpage
-The agent presented a very steep improvement as $k$ was approaching $2$. Above this value, the completed trips ratio just showed a slight growth. Now, let's check how the number of trials changed the average reward received by the agent.
+The agent presented a very steep improvement as $k$ was approaching $3$. Above this value, the completed trips ratio just showed a slight growth. Now, let's check how the number of trials changed the average reward received by the agent.
 
 \begin{figure}[ht!]
 \centering
@@ -278,7 +278,7 @@ The agent presented a very steep improvement as $k$ was approaching $2$. Above t
 \caption{\label{fig:cum_reward_by_k}Average Cumulative Reward By Value of $k$}
 \end{figure}
 
-Clearly, small values of $k$ are worst than large values, as can be seen at the figure \ref{fig:cum_reward_by_k}. As I want that my agent has some probability of exploring new actions, and it seems that $k=2$ is the best choice (the "slope" is not so steep, and the start value is pretty high), I will use this parameter to perform the next simulations.
+Clearly, small values of $k$ are worst than large values, as can be seen at the figure \ref{fig:cum_reward_by_k}. As I want that my agent has some probability of exploring new actions, and it seems that $k=3$ is the best choice (the "slope" is not so steep, and the start value is pretty high), I will use this parameter to perform the next simulations.
 
 \subsection{Nondeterministic Rewards and Actions}
 The last modification that I want to introduce is when the environment is non-deterministic. As I said before, the algorithm used is appropriate to the deterministic case. On a nondeterministic environment, the reward function $r(s,\,a)$ and action transition function $\delta(s,\,a)$ may have probabilistic outcomes. As there are other agents in the smartcab world, I believe that it is a proper assumption.
@@ -325,12 +325,14 @@ In the last section, I will use $\gamma = 0.5$ to perform the final tests.
 
 \section{Conclusion}
 \label{sec:conclusion}
+In this section, I will compare the performance of the algorithms implemented so far when will show how a little change can make a huge difference in reinforcement learning problems.
 
+\subsection{Final Remarks}
 The goal of the whole project was to build an agent that obeys traffic rules correctly and reachs the destination within an allotted time. So, the "perfect" agent would be the one that always come to the destination in the goal time without any penalty.
 
 However, as our environment is non-deterministic, to always reach the destination on time is not reasonable. Also, as the environment penalizes the agent even when it makes a correct move, but in a distinct direction from the target location, it isn't fair to expect that the perfect agent never incurs any penalty.
 
-So, the best one would be the one that learns a reasonable policy fast and receives the maximum average cumulative reward possible. Average because we should weight the rewards received by the number of steps used to avoid discrepancies. In this sense, let's first compare how the modifications made on this project reflected on our agent when we ensure deadline. The improved agent will be set with $\gamma=0.5$ and $k=2$.
+So, the best one would be the one that learns a reasonable policy fast and receives the maximum average cumulative reward possible. Average because we should weight the rewards received by the number of steps used to avoid discrepancies. In this sense, let's first compare how the modifications made on this project reflected on our agent when we ensure deadline. The improved agent will be set with $\gamma=0.5$ and $k=3$.
 
 
 \begin{figure}[ht!]
@@ -339,7 +341,20 @@ So, the best one would be the one that learns a reasonable policy fast and recei
 \caption{\label{fig:perf_compr}Cumulative Reward By Agent}
 \end{figure}
 
-As can be seen above, the improved agent did better than the other implementations. It reached the destination $65\%$ of the trials on time and the final average reward by action was greater than the others. It was achieved by tuning the parameters, including an experimentation strategy and changing the $\hat{Q}$ function to deal with the non-deterministic environment, as explained before. The random agent reached the destination on time just $42\%$ of the trials and the agent that used the deterministic version of $\hat{Q}$ function, $55\%$. Although the final agent is still incurring penalties, it is closer to a perfect agent than it was when using just random moves.
+As can be seen above, the improved agent did better than the other implementations. It reached the destination $64\%$ of the trials on time and the final average reward by action was greater than the others. It was achieved by tuning the parameters, including an experimentation strategy and changing the $\hat{Q}$ function to deal with the non-deterministic environment, as explained before. The random agent reached the destination on time just $42\%$ of the trials and the agent that used the deterministic version of $\hat{Q}$ function, $55\%$. Although the final agent is still incurring penalties, it is closer to a perfect agent than it was when using just random moves. In the next subsection, I will show how to change the behavior of the agent radically.
+
+\subsection{Blowing Up Everything: Changing The Intern State}
+As pointed out by the Udacity Reviewer, something that I should have taken into account was the size of state space resulted by my choice of agents' intern state representation. I included an Experimentation Strategy and addressed a non-deterministic MDP environment exactly due to the number of states that the agent would need to learn. It turned out being the right choice, as demonstrated in the last subsection.
+
+However, I believe that I underestimated this single decision. My current state is represented by the tuple $(inputs,\, next\_waypoint,\, deadline)$. The $deadline$ is assigned by the Environment in a non-deterministic way, what makes my state space unlikely to learn in $100$ trials. Let's see what happens If I discard this single variable in the performance of all my $LearningAgent$:
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.75\textwidth]{images/performance_comparition_2.png}
+\caption{\label{fig:perf_compr_2}Cumulative Reward By Agent}
+\end{figure}
+
+Using this inter-state representation, the final version of the agent is much closer to a perfect agent. It reached the destination at $90\%$ of the trials and learned most of what need to learn in less than $60$ trials.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% REFLECTION
@@ -347,8 +362,9 @@ As can be seen above, the improved agent did better than the other implementatio
 
 \section{Reflection}
 \label{sec:reflection}
-It's hard to say how better would be the performance of a perfect agent to contrast to the current implementation, given the stochastic environment. An option would be to implement a learning agent that already knows the traffic rules and just need to learn how to find his way to the destination on time.
+Something really valuable that I learned from reviewers is the importance of the state space representation and how it affects the performance of the learning agent.
 
+Still, it's hard to say how better would be the performance of a perfect agent to contrast to the current implementation, given the stochastic environment. An option would be to implement a learning agent that already knows the traffic rules and just need to learn how to find his way to the destination on time.
 
 
 
