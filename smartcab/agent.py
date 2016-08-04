@@ -19,22 +19,23 @@ from collections import defaultdict
 import pandas as pd
 
 # Log finle enabled. global variable
-DEBUG = False
+DEBUG = True
 
 # setup logging messages
-s_format = '%(asctime)s;%(message)s'
-s_now = time.strftime('%c')
-s_now = s_now.replace('/', '').replace(' ', '_').replace(':', '')
-s_file = 'log/sim_{}.log'.format(s_now)
-logging.basicConfig(filename=s_file, format=s_format)
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.DEBUG)
+if DEBUG:
+    s_format = '%(asctime)s;%(message)s'
+    s_now = time.strftime('%c')
+    s_now = s_now.replace('/', '').replace(' ', '_').replace(':', '')
+    s_file = 'log/sim_{}.log'.format(s_now)
+    logging.basicConfig(filename=s_file, format=s_format)
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter(s_format)
-ch.setFormatter(formatter)
-root.addHandler(ch)
+    formatter = logging.Formatter(s_format)
+    ch.setFormatter(formatter)
+    root.addHandler(ch)
 
 
 '''
@@ -265,10 +266,18 @@ class LearningAgent_k(BasicLearningAgent):
         # print 'PROB: {:.2f}'.format(f_prob)
         # choose the best_action just if: eps <= k**thisQhat / sum(k**Qhat)
         if (random.random() <= f_prob):
-            root.debug('action: explotation, k = {}'.format(self.f_k))
+            s_print = 'action: explotation, k = {}'.format(self.f_k)
+            if DEBUG:
+                root.debug(s_print)
+            else:
+                print s_print
             return best_Action
         else:
-            root.debug('action: exploration, k = {}'.format(self.f_k))
+            s_print = 'action: exploration, k = {}'.format(self.f_k)
+            if DEBUG:
+                root.debug(s_print)
+            else:
+                print s_print
             return random.choice(Environment.valid_actions)
 
 
@@ -374,8 +383,7 @@ def run():
     # a = e.create_agent(BasicAgent)  # create agent
     # a = e.create_agent(BasicLearningAgent)  # create agent
     # a = e.create_agent(LearningAgent_k, f_k=0.5)
-    # a = e.create_agent(LearningAgent)  # create agent
-    a = e.create_agent(LearningAgent_new)  # create agent
+    a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow
     # longer trials
