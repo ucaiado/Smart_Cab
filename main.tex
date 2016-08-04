@@ -148,9 +148,13 @@ According to the table \ref{tab:basic_stats}, It took 59 steps on average, and t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Identify and Update State}
-To complete the implementation of my Basic Agent, I still need to decide how it will represent its state internally. Considering the inputs that it receives before performs any action and, consequently, receives a reward, I will use a tuple using all of them to represent the current state of my agent, in the form $(inputs,\, next\_waypoint,\, deadline)$. I believe that it will represent a reasonable set of states that my agent could use to gather more information from the environment. Later on, we will see how significant this single decision is when dealing with Reinforcement Learning problem.
+To complete the implementation of my Basic Agent, I still need to decide how it will represent its state internally. Considering the inputs that it receives before performs any action and, consequently, receives a reward, I initially will use a tuple using all of them to represent the current state of my agent, in the form $(inputs,\, next\_waypoint,\, deadline)$. I believe that it will represent a reasonable set of states that my agent could use to gather more information from the environment.
 
-$Inputs$ is a dictionary with the state of the traffic light for the agents' direction of movement and the direction of the random agents on each of the incoming roadways (if any). $next_waypoint$ is the direction of the target location and $deadline$, a timer. So, let's count the number of stated that I get when I enforce deadline in my simulation on $100$ trials.
+$Inputs$ is a dictionary with the state of the traffic light for the agents' direction of movement and the direction of the random agents on each of the incoming roadways (if any). $next\_waypoint$ is the direction of the target location and $deadline$, a timer.
+
+I believe that $next\_waypoint$ and $inputs$ are natural choices, given that the first gives the direction of the target and the second provides information about the environment state. The inclusion of $deadline$ might help the agent choose to explore the environment when it has more time available, for example. Later on, we will see how significant this single decision is when dealing with Reinforcement Learning problems.
+
+So, let's count the number of stated that I get when I enforce deadline in my simulation on $100$ trials.
 
 \begin{lstlisting}
 number of states in the state space: 891
