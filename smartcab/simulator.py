@@ -5,7 +5,7 @@ import importlib
 import logging
 
 # global variable
-DEBUG = True
+DEBUG = False
 
 
 class Simulator(object):
