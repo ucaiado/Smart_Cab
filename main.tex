@@ -96,7 +96,7 @@ Trial aborted.
 \end{lstlisting}
 
 \subsection{The Basic Agent}
-As mentioned before, I am going to implement a smartcab that processes the following inputs at each time step:
+As mentioned before, I am going to implement a Smartcab that processes the following inputs at each time step:
 
 \begin{itemize}
 \item \textit{Next waypoint location}: about its current position and heading
@@ -174,7 +174,7 @@ The figure \ref{fig:hist_basic_agent} presents the frequency of the counting of 
 
 \section{Implement Q-Learning}
 \label{sec:implement_q_learning}
-In this section, I will briefelly explained the concept of Q-learning and implement an algorithm to learn the Q function.
+In this section, I will briefly explained the concept of Q-learning and implement an algorithm to learn the Q function.
 
 \subsection{The Q-Function}
 As mention before, to learn an optimal policy $\pi^{*}$, I can't learn a function $\pi^{*}: S \rightarrow A$ that maps a state to the optimal action directly. There is no such information upfront to be used as training data. Instead, as \cite{Mitchell} explained, the only available information is the sequence of immediate rewards $r(s_i, a_i)$ for $i=1,\, 2,\, 3,\,...$
@@ -254,7 +254,7 @@ The agent explored just one possible action in $56\%$ of the states in the Q-Tab
 In this section, I will try to improve the driving agent to make it consistently reaches the destination within allotted time and the net reward positive.
 
 \subsection{Experimentation Strategies}
-One of the issues of the current strategy is that the agent could overcommit to actions that presented positive $\hat{Q}$ values early in the simulation, failing to explore other actions that could present even higher values. \cite{Mitchell} proposed to use a probabilistic approach to select actions, assigning higher probabilities to action with high $\hat{Q}$ values, but given to every action at least a nonzero probability. So, I will implement the following relation:
+One of the issues of the current strategy is that the agent could over-commit to actions that presented positive $\hat{Q}$ values early in the simulation, failing to explore other actions that could present even higher values. \cite{Mitchell} proposed to use a probabilistic approach to select actions, assigning higher probabilities to action with high $\hat{Q}$ values, but given to every action at least a nonzero probability. So, I will implement the following relation:
 
 $$P(a_i\, | \,s ) = \frac{k ^{\hat{Q}(s, a_i)}}{\sum_j k^{\hat{Q}(s, a_j)}}$$
 
@@ -273,7 +273,6 @@ Large values of $k$ assigned a higher probability of the agent exploits what it 
 \endminipage
 \end{figure}
 
-\newpage
 The agent presented a very steep improvement as $k$ was approaching $3$. Above this value, the completed trips ratio just showed a slight growth. Now, let's check how the number of trials changed the average reward received by the agent.
 
 \begin{figure}[ht!]
@@ -284,8 +283,8 @@ The agent presented a very steep improvement as $k$ was approaching $3$. Above t
 
 Clearly, small values of $k$ are worst than large values, as can be seen at the figure \ref{fig:cum_reward_by_k}. As I want that my agent has some probability of exploring new actions, and it seems that $k=3$ is the best choice (the "slope" is not so steep, and the start value is pretty high), I will use this parameter to perform the next simulations.
 
-\subsection{Nondeterministic Rewards and Actions}
-The last modification that I want to introduce is when the environment is non-deterministic. As I said before, the algorithm used is appropriate to the deterministic case. On a nondeterministic environment, the reward function $r(s,\,a)$ and action transition function $\delta(s,\,a)$ may have probabilistic outcomes. As there are other agents in the smartcab world, I believe that it is a proper assumption.
+\subsection{Non-deterministic Rewards and Actions}
+The last modification that I want to introduce is when the environment is non-deterministic. As I said before, the algorithm used is appropriate to the deterministic case. On a nondeterministic environment, the reward function $r(s,\,a)$ and action transition function $\delta(s,\,a)$ may have probabilistic outcomes. As there are other agents in the Smartcab world, I believe that it is a proper assumption.
 
 As explained by \cite{Mitchell}, to handle nondeterministic MDPs, it is needed to redefine the value $V^{*}$ to be expressed as a expected value. So, jumping to the $Q$ function, we can re-express $Q$ recursively as:
 
@@ -297,7 +296,7 @@ Q(s, \, a) &= E \left [r(s, a) \right ] + E \left [\gamma \, \underset{a'}{\max}
 \end{aligned}
 \end{equation}
 
-Where $P\left(s' \,| \,s, a   \right)$ is the probability that taking action $a$ in state $s$ will produce the next state $s'$. To implement that, we need to assume that the $\hat{Q}$ values in our table may be wrong, due to the nondeterministic behavior of our environment. So, \cite{Mitchell} suggested to modifying the training rule by introducing a decaying weighted average factor to the current $\hat{Q}$ value and to the revised estimate, such that:
+Where $P\left(s' \,| \,s, a   \right)$ is the probability that taking action $a$ in state $s$ will produce the next state $s'$. To implement that, we need to assume that the $\hat{Q}$ values in our table may be wrong, due to the non-deterministic behavior of our environment. So, \cite{Mitchell} suggested to modifying the training rule by introducing a decaying weighted average factor to the current $\hat{Q}$ value and to the revised estimate, such that:
 
 $$\hat{Q}(s, \, a) \leftarrow  (1 - \alpha_{n})\, \hat{Q}_{n-1}(s, \, a) +  \alpha_{n}\left[ r + \gamma \underset{a'}{\max} \hat{Q}_{n-1}(s', \, a') \right ]$$
 
@@ -312,7 +311,8 @@ Times the agent successfully reached the target: 58
 
 Looking just at the times the agent has completed the route, it doesn't look like we made much progress. I will compare the performance of all the agents created so far in the last section.
 
-\subsection{Non-deterministic Rewards and Actions}
+\newpage
+\subsection{The last parameter to Tune: Gamma}
 There is just one remain parameter of the model that was not explored yet:  the $\gamma$. As already explained, the $\gamma$ in the $\hat{Q}$ function is a factor used to discount the immediate successor state to be used to update $\hat{Q}$ table. As $\gamma$ approaches $0$, less "memory" the agent has. So, let's check what happens when we vary this parameter about the average cumulative reward of the learning agent:
 
 \begin{figure}[ht!]
@@ -350,7 +350,7 @@ As can be seen above, the improved agent did better than the other implementatio
 \subsection{Blowing Up Everything: Changing The Intern State}
 As pointed out by the Udacity Reviewer, something that I should have taken into account was the size of state space resulted by my choice of agents' intern state representation. I included an Experimentation Strategy and addressed a non-deterministic MDP environment exactly due to the number of states that the agent would need to learn. It turned out being the right choice, as demonstrated in the last subsection.
 
-However, I believe that I underestimated this single decision. My current state is represented by the tuple $(inputs,\, next\_waypoint,\, deadline)$. The $deadline$ is assigned by the Environment in a non-deterministic way, what makes my state space unlikely to learn in $100$ trials. Let's see what happens If I discard this single variable in the performance of all my $LearningAgent$:
+However, I believe that I underestimated this single decision. My current state is represented by the tuple $(inputs,\, next\_waypoint,\, deadline)$. The $deadline$ is assigned by the Environment in a non-deterministic way, what makes my state space unlikely to learn in $100$ trials. In the figure \ref{fig:perf_compr_2} is possible to see what happens If I discard this single variable in the performance of all my $LearningAgent$.
 
 \begin{figure}[ht!]
 \centering
